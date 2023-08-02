@@ -5,20 +5,21 @@ import useHideShow from '../../hooks/useHideShow';
 // Images
 
 import arrowImg from "../../assets/images/arrow.png"
-const SelectCustom = ({ onCustom,date,activeData,width }) => {
+const SelectCustom = ({ onCustom,date,activeData,width,key='' }) => {
+console.log('date :', date);
 
-  const [headerRef, childrenRef, otherRef, setShowLinks, showLinks] =
+  const {headerRef, childrenRef, otherRef, setShowLinks, showLinks} =
     useHideShow();
   const [selectValue, setSelectValue] = useState(activeData);
 
   const handleClick = useCallback(
-    (value) => {
+    (value,id) => {
       setShowLinks((show) => !show);
       setSelectValue(value);
       if (value === "Custom") {
         
-        onCustom();
       }
+      onCustom(id);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [selectValue]
@@ -33,8 +34,12 @@ const SelectCustom = ({ onCustom,date,activeData,width }) => {
       <NavWrap ref={headerRef} style={!showLinks ? { border: "none" } : null}>
         <ul ref={childrenRef}>
           {date.map((item) => {
+            
             return (
-              <li key={item.id} onClick={() => handleClick(item.value)}>
+              <li
+                key={item.id}
+                onClick={() => handleClick(item.value, item.id)}
+              >
                 {item.value}
               </li>
             );

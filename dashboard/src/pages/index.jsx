@@ -6,7 +6,6 @@ import Dashboard from "./Dashboard";
 import {
   WithdrawRequests,
   DepositsRequests,
-  AutoDeposits,
   ManualWithdraw,
   ManualDeposit,
 } from "./Transactions";
@@ -20,12 +19,12 @@ import WalletPerson from "./WalletPerson"
 import ViewPerson from "./ViewPerson"
 import MyProfile from "./MyProfile"
 
+
 export {
   Home,
   Dashboard,
   WithdrawRequests,
   DepositsRequests,
-  AutoDeposits,
   ManualWithdraw,
   ManualDeposit,
   SuperAgents,

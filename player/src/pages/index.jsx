@@ -1,24 +1,23 @@
-import Home from "./Home/Home.lazy";
-import About from "./About/About.lazy";
-// import Login from "./Login";
+import Home from "./Home";
+import About from "./About";
 
 // Auth
-import Login from "./Auth/Login/Login.lazy";
-import Register from "./Auth/Register/Register.lazy";
-import ResetPassword from "./Auth/ResetPassword/ResetPassword.lazy";
-import ForgotPassword from "./Auth/ForgotPassword/ForgotPassword.lazy";
-import Withdraw from "./Withdraw";
-import Deposit from "./Deposit"
+import Login from "./Auth/Login";
+import Register from "./Auth/Register";
+import ResetPassword from "./Auth/ResetPassword";
+import ForgotPassword from "./Auth/ForgotPassword";
+
+// import Withdraw from "./Withdraw";
+// import Deposit from "./Deposit"
 
 // PlayerProfile
 import { Profile, FundInOut, Outstanding, Transactions } from "./PlayerProfile";
 import Notifications from "./Notifications/";
-
-import CallAgent from "./CallAgent"
+import AgentList from "../components/AgentList";
+import CallAgent from "./CallAgent";
 
 import NotFoundPage from "./NotFoundPage/NotFoundPage.lazy";
 import ErrorPage from "./ErrorPage";
-
 
 export {
   Home,
@@ -34,7 +33,8 @@ export {
   Outstanding,
   Transactions,
   Notifications,
-  Withdraw,
-  Deposit,
+  AgentList,
+  // Withdraw,
+  // Deposit,
   CallAgent,
 };

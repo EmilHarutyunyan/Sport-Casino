@@ -22,11 +22,13 @@ import PlatformMost from "../PlatformMost";
 import { selectUser, setError, setMessage } from "../../app/features/user/userSlice";
 import { userLogin } from "../../app/features/user/userActions";
 import Spinner from "../Spinner/Spinner";
+import { notify } from "../../utils/utils";
+import { ToastContainer } from "react-toastify";
 
 const Login = ({ closeModalLogin, openModalForgot }) => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate()
-  const { loading, userInfo, error } = useSelector(selectUser);
+  const { loading, userInfo, error, message } = useSelector(selectUser);
   const dispatch = useDispatch();
   // const navigate = useNavigate();
   const location = useLocation();
@@ -54,10 +56,20 @@ const Login = ({ closeModalLogin, openModalForgot }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, userInfo])
 
-  useEffect(() => {
-    return () => dispatch(setError(null));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    useEffect(() => {
+      if (message) {
+        notify(message);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [message]);
+    useEffect(() => {
+      return () => {
+        dispatch(setError(null));
+        dispatch(setMessage(null));
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
 
   const submitForm = (data) => {
 
@@ -70,6 +82,18 @@ const Login = ({ closeModalLogin, openModalForgot }) => {
   };
   return (
     <Wrapper>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <Container>
         <h2>Login</h2>
         <form onSubmit={handleSubmit(submitForm)}>

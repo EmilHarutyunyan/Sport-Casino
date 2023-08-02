@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo } from 'react'
 // Styles
 import {
   ActionWrap,
@@ -15,18 +15,24 @@ import { formatDateMDY, roleMemo, roles } from '../../utils/utils';
 import { Link, useNavigate } from 'react-router-dom';
 // Images
 import balanceImg from "../../assets/images/balance.png";
-import editImg from "../../assets/images/edit.png"
-import { CREATE_PERSON, EDIT_PERSON, VIEW_PERSON, WALLET_PERSON } from '../../router/route-path';
-import TokenService from '../../services/token.service';
+
+import { CREATE_PERSON, VIEW_PERSON, WALLET_PERSON } from '../../router/route-path';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser, setError } from '../../app/features/user/userSlice';
 import Spinner from '../../components/Spinner/Spinner';
 import viewImg from "../../assets/images/view.png";
 import { getUsersByRole } from '../../app/features/user/userActions';
+import { useTransition } from 'react';
+import { useState } from 'react';
 const SuperAgents = () => {
   const navigation = useNavigate()
   const {superAgents,loading} = useSelector(selectUser)
+  const [isPending, startTransition] = useTransition();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filtered, setFiltered] = useState(superAgents);
+  const [filterUser, setFilterUser] = useState([])
+  
   const dispatch = useDispatch()
 
   const columns = useMemo(
@@ -59,33 +65,34 @@ const SuperAgents = () => {
         accessor: "attached_users",
         Cell: (props) => {
           const { value } = props;
-          return <Link to={""}>{value.length}</Link>;
+          return <Link to={""}>{value?.length}</Link>;
         },
       },
       {
         Header: "Created",
-        accessor: "created",
+        accessor: "date_time",
       },
       {
         Header: "Actions",
-        accessor: "status",
+        accessor: "id",
         Cell: (props) => {
           const {
             row: { original: item },
           } = props;
-
+          
+        
           return (
             <ActionWrap>
               <div
                 onClick={() =>
-                  handleNavigation(`${WALLET_PERSON}/${item._id}`, item)
+                  handleNavigation(`${WALLET_PERSON}/${item.id}`, item)
                 }
               >
                 <img src={balanceImg} alt={"balance"} />
               </div>
               <div
                 onClick={() =>
-                  handleNavigation(`${VIEW_PERSON}/${item._id}`, roleMemo)
+                  handleNavigation(`${VIEW_PERSON}/${item.id}`, roleMemo)
                 }
               >
                 <img src={viewImg} alt={"view"} />
@@ -96,7 +103,7 @@ const SuperAgents = () => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [filtered]
   );
   const {
     getTableProps,
@@ -110,8 +117,8 @@ const SuperAgents = () => {
   } = useTable(
     {
       columns,
-      data:superAgents,
-      initialState: { pageIndex: 0,pageSize:5 },
+      data: filtered,
+      initialState: { pageIndex: 0, pageSize: 5 },
     },
     usePagination
   );
@@ -129,9 +136,33 @@ const SuperAgents = () => {
     return () => dispatch(setError(null));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
+   useEffect(() => {
+     setFiltered(superAgents);
+     const filterParent = superAgents.map(user => {
+      return {value:user?.parent?.full_name, id:user?.parent.id}
+     })
+     setFilterUser(filterParent);
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [superAgents]);
+
+const handleChangeSearch = ({ target: { value } }) => {
+  setSearchTerm(value);
+  
+  startTransition(() => {
+    setFiltered(
+      superAgents.filter(
+        (item) =>
+          item.full_name.toLowerCase().includes(value.toLowerCase()) ||
+          item.user_name.toLowerCase().includes(value.toLowerCase())
+      )
+    );
+  });
+};
+
   if(loading) {
     return <Spinner />
   }
+
 
   return (
     <Wrapper>
@@ -140,7 +171,12 @@ const SuperAgents = () => {
         <form action="">
           <div>
             <label>Search</label>
-            <input type="text" placeholder="Full Name, Username" />
+            <input
+              onChange={handleChangeSearch}
+              value={searchTerm}
+              type="text"
+              placeholder="Full Name, Username"
+            />
           </div>
         </form>
         <BtnWrap>
@@ -148,11 +184,11 @@ const SuperAgents = () => {
             onClick={() =>
               handleNavigation(
                 `${CREATE_PERSON}/${roleMemo()?.role}`,
-                roleMemo()
+                roleMemo(roles.super_agent)
               )
             }
           >
-            Create {roleMemo()?.title}
+            Create Super Agent
           </button>
         </BtnWrap>
       </FormWrap>
@@ -170,7 +206,7 @@ const SuperAgents = () => {
             ))}
           </thead>
 
-          {superAgents.length ? (
+          {filtered.length ? (
             <>
               <tbody {...getTableBodyProps()}>
                 {page.map((row, i) => {
@@ -178,7 +214,7 @@ const SuperAgents = () => {
                   return (
                     <tr {...row.getRowProps()}>
                       {row.cells.map((cell) => {
-                        if (cell.column.Header === "Date") {
+                        if (cell.column.Header === "Created") {
                           return (
                             <td {...cell.getCellProps()}>
                               {formatDateMDY(cell.value)}
@@ -197,6 +233,14 @@ const SuperAgents = () => {
                 })}
               </tbody>
             </>
+          ) : isPending ? (
+            <tbody>
+              <tr>
+                <td colSpan="9" style={{ textAlign: "center" }}>
+                  Loading...
+                </td>
+              </tr>
+            </tbody>
           ) : (
             <tbody>
               <tr>

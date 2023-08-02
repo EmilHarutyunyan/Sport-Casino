@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 // Styles
 import {
   ActionWrap,
@@ -14,7 +14,6 @@ import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   CREATE_PERSON,
-  EDIT_PERSON,
   VIEW_PERSON,
   WALLET_PERSON,
 } from "../../router/route-path";
@@ -23,42 +22,23 @@ import { formatDateMDY, roleMemo, roles } from "../../utils/utils";
 import Pagination from "../../components/Pagination/Pagination";
 // Images
 import balanceImg from "../../assets/images/balance.png";
-import editImg from "../../assets/images/edit.png";
-import viewImg from "../../assets/images/view.png"
+import viewImg from "../../assets/images/view.png";
 import SelectCustom from "../../components/SelectCustom";
 import { useDispatch, useSelector } from "react-redux";
-import {getUsersByRole } from "../../app/features/user/userActions";
+import { getUsersByRole } from "../../app/features/user/userActions";
 import { selectUser, setError } from "../../app/features/user/userSlice";
 import Spinner from "../../components/Spinner/Spinner";
-
-// const ActionsPerson = ({
-//   handleNavigation,
-//   WALLET_PERSON,
-//   item,
-//   balanceImg,
-//   viewImg,
-//   roleMemo,
-//   id,
-// }) => {
-//   return (
-//     <ActionWrap>
-//       <div
-//         onClick={() => handleNavigation(`${WALLET_PERSON}/${item.id}`, item)}
-//       >
-//         <img src={balanceImg} alt={"balance"} />
-//       </div>
-//       <div onClick={() => handleNavigation(`${VIEW_PERSON}/${item.id}`, item)}>
-//         <img src={viewImg} alt={"view"} />
-//       </div>
-//     </ActionWrap>
-//   );
-// };
+import { useTransition } from "react";
+import { useState } from "react";
 
 const Agents = () => {
-  
   const navigation = useNavigate();
   const dispatch = useDispatch();
   const { agents, loading } = useSelector(selectUser);
+  const [isPending, startTransition] = useTransition();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filtered, setFiltered] = useState(agents);
+  const [filterUser, setFilterUser] = useState([]);
   const handleNavigation = useCallback(
     (path, state) => {
       navigation(path, { state });
@@ -78,7 +58,7 @@ const Agents = () => {
       },
       {
         Header: "Super Agent",
-        accessor: "super_agents",
+        accessor: "parent.full_name",
       },
       {
         Header: "Wallets",
@@ -97,15 +77,15 @@ const Agents = () => {
 
       {
         Header: "Players amount",
-        accessor: "players",
+        accessor: "attached_users",
         Cell: (props) => {
           const { value } = props;
-          return <Link to={""}>{value.length}</Link>;
+          return <Link to={""}>{value?.length}</Link>;
         },
       },
       {
         Header: "Created",
-        accessor: "created",
+        accessor: "date_time",
       },
       {
         Header: "Actions",
@@ -114,19 +94,19 @@ const Agents = () => {
           const {
             row: { original: item },
           } = props;
-          
+
           return (
             <ActionWrap>
               <div
                 onClick={() =>
-                  handleNavigation(`${WALLET_PERSON}/${item._id}`, item)
+                  handleNavigation(`${WALLET_PERSON}/${item.id}`, item)
                 }
               >
                 <img src={balanceImg} alt={"balance"} />
               </div>
               <div
                 onClick={() =>
-                  handleNavigation(`${VIEW_PERSON}/${item._id}`, roleMemo)
+                  handleNavigation(`${VIEW_PERSON}/${item.id}`, roleMemo)
                 }
               >
                 <img src={viewImg} alt={"view"} />
@@ -139,6 +119,7 @@ const Agents = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -151,19 +132,56 @@ const Agents = () => {
   } = useTable(
     {
       columns,
-      data: agents,
+      data: filtered,
       initialState: { pageIndex: 0, pageSize: 5 },
     },
     usePagination
   );
-useEffect(() => {
-  dispatch(getUsersByRole(roles.agent));
-  return () => dispatch(setError(null));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
- if (loading) {
-   return <Spinner />;
- }
+  useEffect(() => {
+    dispatch(getUsersByRole(roles.agent));
+    return () => dispatch(setError(null));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+     useEffect(() => {
+       setFiltered(agents);
+       const filterParent = agents.map(user => {
+         return {value:user?.parent?.full_name, id:user?.parent.id}
+        })
+        
+        setFilterUser([{ value: "Filter by Super Agent",id:0 }, ...filterParent]);
+       // eslint-disable-next-line react-hooks/exhaustive-deps
+     }, [agents]);
+  const handleChangeSearch = ({ target: { value } }) => {
+    setSearchTerm(value);
+    startTransition(() => {
+      setFiltered(
+        agents.filter(
+          (item) =>
+            item.full_name.toLowerCase().includes(value.toLowerCase()) ||
+            item.user_name.toLowerCase().includes(value.toLowerCase())
+        )
+      );
+    });
+  };
+  const handleSelectFilter = (id) => {
+    if(id === 0) {
+      startTransition(() => {
+        setFiltered(agents);
+      });
+    } else {
+      startTransition(() => {
+        setFiltered(
+          agents.filter(
+            (item) =>
+              item.parent.id === id
+          )
+        );
+      });
+    }
+  }
+  if (loading) {
+    return <Spinner />;
+  }
   return (
     <Wrapper>
       <Title title={"Agents"} />
@@ -171,24 +189,31 @@ useEffect(() => {
         <form action="">
           <div>
             <label>Search</label>
-            <input type="text" placeholder="Full Name, Username" />
+            <input
+              onChange={handleChangeSearch}
+              value={searchTerm}
+              type="text"
+              placeholder="Full Name, Username"
+            />
           </div>
         </form>
         <BtnWrap>
-          {roleMemo()?.role === roles.super_agent ? (
-            <button
-              onClick={() =>
-                handleNavigation(
-                  `${CREATE_PERSON}/${roleMemo()?.role}`,
-                  roleMemo()
-                )
-              }
-            >
-              Created {roleMemo()?.title}
-            </button>
-          ) : (
-            <SelectCustom width={'400px'} date={[]} activeData={"Filter by Super Agent"} />
-          )}
+          <button
+            onClick={() =>
+              handleNavigation(
+                `${CREATE_PERSON}/${roleMemo()?.role}`,
+                roleMemo(roles.agent)
+              )
+            }
+          >
+            Created Agent
+          </button>
+          <SelectCustom
+            width={"400px"}
+            date={filterUser}
+            onCustom={handleSelectFilter}
+            activeData={"Filter by Super Agent"}
+          />
         </BtnWrap>
       </FormWrap>
       <div>
@@ -204,7 +229,7 @@ useEffect(() => {
               </tr>
             ))}
           </thead>
-          {agents.length ? (
+          {filtered.length ? (
             <>
               <tbody {...getTableBodyProps()}>
                 {page.map((row, i) => {
@@ -212,7 +237,7 @@ useEffect(() => {
                   return (
                     <tr {...row.getRowProps()}>
                       {row.cells.map((cell) => {
-                        if (cell.column.Header === "Date") {
+                        if (cell.column.Header === "Created") {
                           return (
                             <td {...cell.getCellProps()}>
                               {formatDateMDY(cell.value)}
@@ -231,6 +256,14 @@ useEffect(() => {
                 })}
               </tbody>
             </>
+          ) : isPending ? (
+            <tbody>
+              <tr>
+                <td colSpan="9" style={{ textAlign: "center" }}>
+                  Loading...
+                </td>
+              </tr>
+            </tbody>
           ) : (
             <tbody>
               <tr>

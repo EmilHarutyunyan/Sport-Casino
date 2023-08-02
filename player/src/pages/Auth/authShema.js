@@ -8,9 +8,8 @@ import {
 } from "yup";
 
 export const schema_signIn = object().shape({
-  email: string()
-    .email("Email should have correct format")
-    .required("Email is a required field"),
+  user_name: string()
+    .required("User name is a required field"),
   password: string()
     .min(8)
     .max(32)

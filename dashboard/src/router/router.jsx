@@ -17,7 +17,6 @@ import {
   NOT_FOUND_PAGE,
   SUPPER_AGENT,
   TRANSACTIONS,
-  TRANSACTIONS_AUTO_DEPOSIT,
   TRANSACTIONS_DEPOSIT,
   TRANSACTIONS_MANUAL_DEPOSIT,
   TRANSACTIONS_MANUAL_WITHDRAW,
@@ -33,7 +32,6 @@ import {
 // import TokenService from "../services/token.service";
 // Pages
 import {
-  AutoDeposits,
   Dashboard,
   DepositsRequests,
   CreatePerson,
@@ -53,7 +51,6 @@ import {
 } from "../pages";
 import { SportsStats } from "../pages/Sports";
 import PrivateRouter from "./PrivateRouter";
-// import PrivateRouter from "./PrivateRouter";
 
 // const user = TokenService.getUser() || null;
 const router = createBrowserRouter(
@@ -72,7 +69,7 @@ const router = createBrowserRouter(
         <Route path={TRANSACTIONS}>
           <Route path={TRANSACTIONS_WITHDRAW} element={<WithdrawRequests />} />
           <Route path={TRANSACTIONS_DEPOSIT} element={<DepositsRequests />} />
-          <Route path={TRANSACTIONS_AUTO_DEPOSIT} element={<AutoDeposits />} />
+          
           <Route
             path={TRANSACTIONS_MANUAL_WITHDRAW}
             element={<ManualWithdraw />}

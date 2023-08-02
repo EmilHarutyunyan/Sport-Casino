@@ -17,6 +17,7 @@ import { selectUser } from "../../app/features/user/userSlice";
 import Spinner from "../../components/Spinner/Spinner";
 import TokenService from "../../services/token.service";
 import { useState } from "react";
+import { formatDateMDY } from "../../utils/utils";
 const ViewPerson = () => {
   const { id } = useParams();
   const { userDetails, loading } = useSelector(selectUser);
@@ -37,15 +38,24 @@ const ViewPerson = () => {
   useEffect(() => {
     
     if(userDetails) {
-      if(userDetails.user_role!=='player') {
-        const { balance:wallets, email, full_name, user_name, players, phone_number,user_role } =userDetails;
-        setData({
-          wallets,
+      if(userDetails?.user?.user_role!=='player') {
+        const {
+          balance,
           email,
           full_name,
           user_name,
-          players: players.length,
+          attached_users,
           phone_number,
+          date_time,
+        } = userDetails;
+        setData({
+          balance,
+          email,
+          full_name,
+          user_name,
+          children: attached_users?.length,
+          phone_number,
+          created: formatDateMDY(date_time),
         });
       }
     }
@@ -61,7 +71,7 @@ const ViewPerson = () => {
           <HeadWrap>
             <img src={arrowBackImg} alt="arrow" onClick={() => navigate(-1)} />
             <h2>
-              <span>{userDetails?.user_role.split("_").join(" ")} </span>
+              <span>{userDetails?.user?.user_role.split("_").join(" ")} </span>
               {data?.user_name}
             </h2>
           </HeadWrap>
@@ -75,7 +85,7 @@ const ViewPerson = () => {
               return (
                 <ViewItem>
                   <ViewKey>{firstName}</ViewKey>
-                  {key === "wallets" || key === "balance" ? (
+                  {key === "balance" ? (
                     <WalletWrap>
                       <p>
                         <span>Ballance</span>

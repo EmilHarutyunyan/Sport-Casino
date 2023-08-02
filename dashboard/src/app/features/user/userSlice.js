@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { changeUserPass, createAgent, createPlayer, createSuperAgent, getUserDetails, getUsersByRole, registerUser, sendWallet, userLogin } from './userActions'
+import { changeUserPass, coinTransfer, coinWithdraw, createAgent, createPlayer, createSuperAgent, getUserDetails, getUsersByRole, registerUser, sendWallet, userLogin } from './userActions'
 import TokenService from "../../../services/token.service";
 // initialize userToken from local storage
 
@@ -39,6 +39,9 @@ const userSlice = createSlice({
     },
     setError:(state,{payload}) => {
       state.error = payload;
+    },
+    updateUserInfo:(state,{payload}) => {
+      state.userInfo = payload
     }
   },
   extraReducers: (builder) => {
@@ -123,6 +126,7 @@ const userSlice = createSlice({
       })
       .addCase(getUserDetails.fulfilled, (state, { payload }) => {
         state.loading = false;
+        debugger;
         state.userDetails = payload;
       })
       .addCase(getUserDetails.rejected, (state, { payload }) => {
@@ -137,15 +141,27 @@ const userSlice = createSlice({
         state.loading = false;
         state[payload.role] = payload.users;
       })
-      .addCase(sendWallet.pending, (state) => {
+      .addCase(coinTransfer.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(sendWallet.fulfilled, (state, { payload }) => {
+      .addCase(coinTransfer.fulfilled, (state, { payload }) => {
         state.loading = false;
         state.message = payload.message;
       })
-      .addCase(sendWallet.rejected, (state, { payload }) => {
+      .addCase(coinTransfer.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
+      })
+      .addCase(coinWithdraw.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(coinWithdraw.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.message = payload.message;
+      })
+      .addCase(coinWithdraw.rejected, (state, { payload }) => {
         state.loading = false;
         state.error = payload;
       });
@@ -153,7 +169,7 @@ const userSlice = createSlice({
   },
 })
 
-export const { logout, setMessage, setError } = userSlice.actions;
+export const { logout, setMessage, setError, updateUserInfo } = userSlice.actions;
 
 export const selectUser = (state) => state.user;
 

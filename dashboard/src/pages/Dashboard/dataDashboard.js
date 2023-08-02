@@ -1,5 +1,5 @@
 export const balanceData = {
-  title: "Current cashable balance",
+  title: "Valid Turnover balance",
   count: 389.85,
   info: [
     {

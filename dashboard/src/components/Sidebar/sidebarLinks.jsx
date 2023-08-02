@@ -19,7 +19,6 @@ import {
   SPORTS_STATS,
   SUPPER_AGENT,
   TRANSACTIONS,
-  TRANSACTIONS_AUTO_DEPOSIT,
   TRANSACTIONS_DEPOSIT,
   TRANSACTIONS_MANUAL_DEPOSIT,
   TRANSACTIONS_MANUAL_WITHDRAW,
@@ -43,21 +42,16 @@ export const sidebarLinks = [
     icon: <TransferIcon />,
 
     children: [
-      {
-        id: uuidv4(),
-        name: "Withdraw Requests",
-        url: TRANSACTIONS_WITHDRAW,
-      },
-      {
-        id: uuidv4(),
-        name: "Deposits Requests",
-        url: TRANSACTIONS_DEPOSIT,
-      },
-      {
-        id: uuidv4(),
-        name: "Auto Deposits",
-        url: TRANSACTIONS_AUTO_DEPOSIT,
-      },
+      // {
+      //   id: uuidv4(),
+      //   name: "Withdraw Requests",
+      //   url: TRANSACTIONS_WITHDRAW,
+      // },
+      // {
+      //   id: uuidv4(),
+      //   name: "Deposits Requests",
+      //   url: TRANSACTIONS_DEPOSIT,
+      // },
       {
         id: uuidv4(),
         name: "Manual Withdraw",

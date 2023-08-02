@@ -8,11 +8,10 @@ import {
 // import PrivateRouter from './PrivateRouter'
 
 import Layout from "../layout/Layout";
-import { CALL_AGENT, DEPOSIT, DEPOSIT_PAYMENT, FUND_IN_OUT, HOME, MOBILE_PAYMENT, NOTIFICATIONS, NOT_FOUND_PAGE, OUTSTANDING, PLAYER, PLAYER_PROFILE, TRANSACTIONS, WITHDRAW } from "./route-path";
+import { CALL_AGENT, DEPOSIT, FUND_IN_OUT, HOME,  NOTIFICATIONS, NOT_FOUND_PAGE, OUTSTANDING, PLAYER, PLAYER_PROFILE, TRANSACTIONS, WITHDRAW } from "./route-path";
 // import TokenService from "../services/token.service";
 // Pages
 import {
-  Deposit,
   ErrorPage,
   FundInOut,
   Home,
@@ -22,11 +21,9 @@ import {
   Outstanding,
   Profile,
   Transactions,
-  Withdraw,
   CallAgent,
+  AgentList,
 } from "../pages";
-import PaymentMethod from "../components/PaymentMethod";
-import MobileBank from "../components/MobileBank/MobileBank";
 // import PrivateRouter from "./PrivateRouter";
 
 // const user = TokenService.getUser() || null;
@@ -42,10 +39,10 @@ const router = createBrowserRouter(
         <Route path={TRANSACTIONS} element={<Transactions />} />
       </Route>
       <Route path={NOTIFICATIONS} element={<Notifications />} />
-      <Route path={WITHDRAW} element={<Withdraw />} />
-      <Route path={DEPOSIT} element={<Deposit />} />
-      <Route path={DEPOSIT_PAYMENT} element={<PaymentMethod />} />
-      <Route path={MOBILE_PAYMENT} element={<MobileBank />} />
+      <Route path={WITHDRAW} element={<AgentList />} />
+      <Route path={DEPOSIT} element={<AgentList />} />
+      {/* <Route path={DEPOSIT_PAYMENT} element={<PaymentMethod />} />
+      <Route path={MOBILE_PAYMENT} element={<MobileBank />} /> */}
       <Route path={CALL_AGENT} element={<CallAgent />} />
       {/*       
         {user ? (

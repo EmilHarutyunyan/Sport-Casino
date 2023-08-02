@@ -6,6 +6,7 @@ import { selectUser } from "../../app/features/user/userSlice";
 
 const UserAction = () => {
   const {userInfo} = useSelector(selectUser)
+
   
   return (
     <Wrapper>
@@ -29,8 +30,8 @@ const UserAction = () => {
           </p>
           <p>
             {userInfo
-              ? userInfo?.user?.role.role?.charAt(0).toUpperCase() +
-                userInfo?.user?.role.role.slice(1)
+              ? userInfo?.user?.role?.charAt(0).toUpperCase() +
+                userInfo?.user?.role.slice(1)
               : "Admin"}
           </p>
         </InfoName>

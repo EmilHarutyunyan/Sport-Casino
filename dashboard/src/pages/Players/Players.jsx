@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useMemo, useCallback, useEffect } from "react";
 // Styles
 import {
   Wrapper,
@@ -10,7 +10,7 @@ import {
   WalletWrap,
 } from "./Players.styles";
 import Title from "../../components/Title";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   CREATE_PERSON,
   EDIT_PERSON,
@@ -29,6 +29,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUsersByRole } from "../../app/features/user/userActions";
 import Spinner from "../../components/Spinner/Spinner";
 import { selectUser, setError } from "../../app/features/user/userSlice";
+import { useTransition } from "react";
+import { useState } from "react";
 
 const ActionsPerson = ({
   handleNavigation,
@@ -59,6 +61,10 @@ const Players = () => {
   const navigation = useNavigate();
   const dispatch = useDispatch();
   const { loading, players } = useSelector(selectUser);
+  const [isPending, startTransition] = useTransition();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filtered, setFiltered] = useState(players);
+   const [filterUser, setFilterUser] = useState([]);
 
   const handleNavigation = useCallback(
     (path, state) => {
@@ -80,9 +86,9 @@ const Players = () => {
       },
       {
         Header: "Agent",
-        accessor: "agent",
+        accessor: "parent.full_name",
       },
-{
+      {
         Header: "Wallets",
         accessor: "balance",
         Cell: ({ value }) => {
@@ -94,7 +100,7 @@ const Players = () => {
               </p>
             </WalletWrap>
           );
-        }
+        },
       },
       {
         Header: "Status",
@@ -113,7 +119,7 @@ const Players = () => {
       },
       {
         Header: "Registered",
-        accessor: "registered",
+        accessor: "date_time",
       },
       {
         Header: "Actions",
@@ -123,6 +129,7 @@ const Players = () => {
             row: { original: item },
           } = props;
           if (roleMemo()?.role === roles.admin) {
+            console.log("wdasds",item);
             return (
               <div
                 onClick={() =>
@@ -182,6 +189,39 @@ const Players = () => {
     return () => dispatch(setError(null));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    setFiltered(players);
+    const filterParent = players.map((user) => {
+      return { value: user?.parent?.full_name, id: user?.parent.id };
+    });
+    setFilterUser([{ value: "Filter by Agent", id: 0 }, ...filterParent]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [players]);
+
+  const handleChangeSearch = ({ target: { value } }) => {
+    setSearchTerm(value);
+
+    startTransition(() => {
+      setFiltered(
+        players.filter(
+          (item) =>
+            item.full_name.toLowerCase().includes(value.toLowerCase()) ||
+            item.user_name.toLowerCase().includes(value.toLowerCase())
+        )
+      );
+    });
+  };
+  const handleSelectFilter = (id) => {
+    if (id === 0) {
+      startTransition(() => {
+        setFiltered(players);
+      });
+    } else {
+      startTransition(() => {
+        setFiltered(players.filter((item) => item.parent.id === id));
+      });
+    }
+  };
   if (loading) {
     return <Spinner />;
   }
@@ -192,28 +232,32 @@ const Players = () => {
         <form action="">
           <div>
             <label>Search</label>
-            <input type="text" placeholder="Full Name, Username" />
+            <input
+              onChange={handleChangeSearch}
+              value={searchTerm}
+              type="text"
+              placeholder="Full Name, Username"
+            />
           </div>
         </form>
         <BtnWrap>
-          {roleMemo()?.role === roles.agent ? (
-            <button
-              onClick={() =>
-                handleNavigation(
-                  `${CREATE_PERSON}/${roleMemo()?.role}`,
-                  roleMemo()
-                )
-              }
-            >
-              Created {roleMemo()?.title}
-            </button>
-          ) : (
-            <SelectCustom
-              width={"400px"}
-              date={[]}
-              activeData={"Filter by Agent"}
-            />
-          )}
+          <button
+            onClick={() =>
+              handleNavigation(
+                `${CREATE_PERSON}/${roleMemo()?.role}`,
+                roleMemo(roles.player)
+              )
+            }
+          >
+            Created Player
+          </button>
+
+          <SelectCustom
+            width={"400px"}
+            date={filterUser}
+            onCustom={handleSelectFilter}
+            activeData={"Filter by Agent"}
+          />
         </BtnWrap>
       </FormWrap>
       <div>
@@ -229,7 +273,7 @@ const Players = () => {
               </tr>
             ))}
           </thead>
-          {players.length ? (
+          {filtered.length ? (
             <>
               <tbody {...getTableBodyProps()}>
                 {page.map((row, i) => {
@@ -237,7 +281,7 @@ const Players = () => {
                   return (
                     <tr {...row.getRowProps()}>
                       {row.cells.map((cell) => {
-                        if (cell.column.Header === "Date") {
+                        if (cell.column.Header === "Registered") {
                           return (
                             <td {...cell.getCellProps()}>
                               {formatDateMDY(cell.value)}
@@ -256,6 +300,14 @@ const Players = () => {
                 })}
               </tbody>
             </>
+          ) : isPending ? (
+            <tbody>
+              <tr>
+                <td colSpan="9" style={{ textAlign: "center" }}>
+                  Loading...
+                </td>
+              </tr>
+            </tbody>
           ) : (
             <tbody>
               <tr>

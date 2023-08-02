@@ -10,37 +10,45 @@ export const formatDateMDY = (data) => {
 };
 
 export const roles = {
-  admin:'admin',
-  super_agent: 'super_agent',
-  agent :'agent',
-  player :'player',
-}
+  admin: "admin",
+  super_agent: "super_agent",
+  agent: "agent",
+  player: "player",
+};
 
-export const roleMemo = () => {
+export const roleMemo = (position) => {
   const role = TokenService.getRole();
   if (role === roles.admin) {
-    return { role, title: "Super Agent" };
+    return {
+      role,
+      accessRole: [roles.super_agent, roles.agent, roles.player].includes(
+        position
+      ),
+      position,
+    };
   }
   if (role === roles.super_agent) {
-    return { role, title: "Agent" };
+    return {
+      role,
+      accessRole: [roles.agent, roles.player].includes(position),
+      position,
+    };
   }
   if (role === roles.agent) {
-    return { role, title: "Player" };
+    return { role, accessRole: [roles.player].includes(position), position };
   }
 };
 
 export const accessRole = (role) => {
-  
-  if(role === roles.super_agent) {
+  if (role === roles.super_agent) {
     return ![roles.super_agent, roles.agent].includes(role);
   }
-  if(role === roles.agent) {
+  if (role === roles.agent) {
     return ![roles.agent].includes(role);
-  }
-  else {
+  } else {
     return true;
   }
-}
+};
 
 export const notify = (message) =>
   toast.success(message, {

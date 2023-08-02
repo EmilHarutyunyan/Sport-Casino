@@ -8,6 +8,19 @@ class TokenService {
     const user = JSON.parse(localStorage.getItem("user"));
     return user?.access;
   }
+  static getUserBalance() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    return user?.user.balance;
+  }
+  static updateUserBalance(balance) {
+    const userInfo = JSON.parse(localStorage.getItem("user"));
+    const newBalance = { ...userInfo?.user, balance };
+    localStorage.setItem(
+      "user",
+      JSON.stringify({ ...userInfo, user: newBalance })
+    );
+    return { ...userInfo, user:newBalance };
+  }
 
   static updateLocalAccessToken(token) {
     let user = JSON.parse(localStorage.getItem("user"));
@@ -27,9 +40,8 @@ class TokenService {
     localStorage.removeItem(user);
   }
   static getRole() {
-    
-    const user = this.getUser()
-    
+    const user = this.getUser();
+
     return user?.user ? user.user.role?.role : null;
   }
 }

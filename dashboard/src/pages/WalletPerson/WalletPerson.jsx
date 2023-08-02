@@ -20,14 +20,15 @@ import { useForm } from "react-hook-form";
 import { schema_wallet } from "./schema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch, useSelector } from "react-redux";
-import { sendWallet } from "../../app/features/user/userActions";
+import { coinTransfer, coinWithdraw, sendWallet } from "../../app/features/user/userActions";
 import { selectUser, setError, setMessage } from "../../app/features/user/userSlice";
 import { ToastContainer } from "react-toastify";
 import { notify } from "../../utils/utils";
+import Spinner from "../../components/Spinner/Spinner";
 const WalletPerson = () => {
   const { id } = useParams();
   const [switchFlag,setSwitchFlag] = useState(true)
-  const {userInfo,message} = useSelector(selectUser)
+  const {userInfo,message,loading} = useSelector(selectUser)
   const {state :info } = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -50,23 +51,19 @@ const WalletPerson = () => {
     }),
   });
    const submitForm = async (data) => {
+  
+ 
+  
     // await dispatch
-    let ballance;
-    if(switchFlag) {
-      ballance = {
-        ...data,
-        receiver_id: id,
-        sender_id: userInfo.user._id
-      };
-      dispatch(sendWallet(ballance));
-    } else {
-      ballance = {
-        ...data,
-        receiver_id: userInfo.user._id,
-        sender_id: id,
-      };
-      dispatch(sendWallet(ballance));
-    }
+    let ballance = switchFlag ? { ...data, sender: userInfo?.user.id, recipient: id } :{
+         ...data,
+         recipient: userInfo?.user.id,
+         sender: id,
+       } ;
+  
+    let message = switchFlag ? {message:'Deposit Done'} : {message: "WithDraw Done"}
+    
+    dispatch(coinTransfer({ ballance, message, switchFlag }));
     reset()
    };
     useEffect(() => {
@@ -105,13 +102,13 @@ const WalletPerson = () => {
         <CashCoinBalance disableCase={true} cash={info?.ballance} />
         <div className="switchWrap">
           <p>WithDraw</p>
-          <label class="switch">
+          <label className="switch">
             <input
               type="checkbox"
               checked={switchFlag}
               onChange={() => setSwitchFlag((prev) => !prev)}
             />
-            <span class="slider round"></span>
+            <span className="slider round"></span>
           </label>
           <p>Deposit</p>
         </div>
@@ -149,7 +146,9 @@ const WalletPerson = () => {
           </InputContainer> */}
         </Container>
         <BtnWrap>
-          <button type="submit">{switchFlag ? "Deposit" : "Withdraw"}</button>
+          <button type="submit">
+            {loading ? <Spinner /> : switchFlag ? "Deposit" : "Withdraw"}
+          </button>
         </BtnWrap>
       </FormWrap>
     </Wrapper>

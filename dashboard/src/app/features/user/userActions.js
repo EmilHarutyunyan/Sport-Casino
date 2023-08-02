@@ -3,7 +3,8 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import TokenService from '../../../services/token.service'
 import { API_ENDPOINT } from '../../../config/config'
 import axiosInstance from '../../../services/axiosInstance';
-import { logout } from './userSlice';
+import { logout, updateUserInfo } from './userSlice';
+import { roles } from '../../../utils/utils';
 
 export const userLogin = createAsyncThunk(
   "user/login",
@@ -23,11 +24,14 @@ export const userLogin = createAsyncThunk(
         config
       );
 
+      if(data.message.user.role === roles.player) {
+        throw new Error("Player can't login to dashboard ");
+      }
       // store user's token in local storage
       // localStorage.setItem('userToken', data.userToken)
       TokenService.setUser(data.message);
 
-      return data;
+      return data.message;
     } catch (error) {
       // return custom error message from API if any
       if (error.response && error.response.data.message) {
@@ -107,7 +111,7 @@ export const createSuperAgent = createAsyncThunk(
           "Content-Type": "application/json",
         },
       };
-      
+      debugger
       const { data } = await axiosInstance.post(
         `${API_ENDPOINT}admin/create-super-agent`,
         person,
@@ -316,13 +320,14 @@ export const getUserDetails = createAsyncThunk(
        };
        
       const { data } = await axiosInstance.post(
-        `${API_ENDPOINT}user/get-user`,
+        `${API_ENDPOINT}get-user-by-id`,
         {
-            "user_id":id
+          user_id: id,
         },
         config
       );
-      return data[0];
+      debugger
+      return data.message?.user;
     } catch (error) {
       if (error.response && error.response.data.message) {
         return rejectWithValue(error.response.data.message)
@@ -348,6 +353,77 @@ export const getUserAgents = createAsyncThunk(
         `${API_ENDPOINT}super-agent/get-agents`,
         {
           user_id: id,
+        },
+        config
+      );
+      return data[0];
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);
+
+export const coinTransfer = createAsyncThunk(
+  "user/coinTransfer",
+  async (ballance, { rejectWithValue,dispatch }) => {
+    
+  console.log("message :", ballance);
+    try {
+      // configure authorization header with user's token
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      const { data } = await axiosInstance.post(
+        `${API_ENDPOINT}coin-transfer`,
+        ballance.ballance,
+        config
+      );
+      if (data.message)  {
+        debugger
+        const userBalance = TokenService.getUserBalance();
+        const newBalance = ballance.switchFlag
+          ? userBalance - ballance.ballance.amount
+          : userBalance + ballance.ballance.amount;
+        const updateBalance = TokenService.updateUserBalance(newBalance);
+    
+        dispatch(updateUserInfo(updateBalance));
+        return ballance.message
+      }
+      if(!data.message) {
+        throw new Error("Failed")
+      }
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);
+
+export const coinWithdraw = createAsyncThunk(
+  "user/coinWithdraw",
+  async (id, { rejectWithValue }) => {
+    try {
+      // configure authorization header with user's token
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      const { data } = await axiosInstance.post(
+        `${API_ENDPOINT}coin-withdrawl`,
+        {
+          withdrawl_request: id,
         },
         config
       );

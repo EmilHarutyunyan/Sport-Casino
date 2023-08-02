@@ -108,6 +108,7 @@ export const FormWrap = styled.div`
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  align-items: flex-start;
   form {
   
     label {
@@ -130,6 +131,7 @@ export const BtnWrap = styled.div`
     background-color: var(--color-blue);
     border-radius: 8px;
     margin-top: 8px;
+    margin-bottom: 20px;
   }
 `;
 export const WalletWrap = styled.div`

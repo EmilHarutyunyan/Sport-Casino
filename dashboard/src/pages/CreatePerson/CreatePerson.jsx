@@ -36,10 +36,11 @@ import { ToastContainer } from "react-toastify";
 const CreatePerson = () => {
   const { state: roleState } = useLocation();
   const { message, loading, error } = useSelector(selectUser);
+
   const [phone, setPhone] = useState();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  if (!roleState && !roleState?.title && !roleState?.role) {
+  if (!roleState && !roleState?.role) {
     navigate(-1);
   }
 
@@ -69,15 +70,28 @@ const CreatePerson = () => {
   );
   const submitForm = (data) => {
     if (roleState.role === roles.admin) {
-      dispatch(createSuperAgent(data));
+      if (roleState.position === roles.super_agent) {
+        dispatch(createSuperAgent(data));
+      }
+      if (roleState.position === roles.agent) {
+        dispatch(createAgent(data));
+      }
+      if (roleState.position === roles.player) {
+        dispatch(createPlayer(data));
+      }
     }
     if (roleState.role === roles.super_agent) {
-      dispatch(createAgent(data));
+      if (roleState.position === roles.agent) {
+        dispatch(createAgent(data));
+      }
+      if (roleState.position === roles.player) {
+        dispatch(createPlayer(data));
+      }
     }
     if (roleState.role === roles.agent) {
       dispatch(createPlayer(data));
     }
-    reset()
+    reset();
   };
   useEffect(() => {
     if (message) {
@@ -89,7 +103,7 @@ const CreatePerson = () => {
     return () => {
       dispatch(setError(null));
       dispatch(setMessage(null));
-    }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
@@ -191,9 +205,9 @@ const CreatePerson = () => {
               error={errors?.password?.message}
               placeholder="Create password"
               {...register("password")}
+              autoComplete="false"
             />
           </InputContainer>
-
         </Container>
         <BtnWrap>
           <button>Cancel</button>

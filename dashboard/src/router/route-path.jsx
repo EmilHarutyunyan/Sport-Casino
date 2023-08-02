@@ -10,7 +10,6 @@ export const DASHBOARD = "/dashboard";
 export const TRANSACTIONS = "/transactions";
 export const TRANSACTIONS_WITHDRAW = "/transactions/withdraw-requests";
 export const TRANSACTIONS_DEPOSIT = "/transactions/deposits-requests";
-export const TRANSACTIONS_AUTO_DEPOSIT = "/transactions/auto-deposits";
 export const TRANSACTIONS_MANUAL_WITHDRAW = "/transactions/manual-withdraw";
 export const TRANSACTIONS_MANUAL_DEPOSIT = "/transactions/manual-deposit";
 // -------------------------------------------------------------------------

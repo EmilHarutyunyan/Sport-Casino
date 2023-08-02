@@ -7,7 +7,7 @@ import { formatDateMDY } from "../../../utils/utils";
 import Title from "../../../components/Title";
 import FilterManualDeposit from "../../../components/FilterManualDeposit";
 const ManualDeposit = () => {
-  const [data, setData] = useState([]);
+  const [data] = useState([]);
   const columns = useMemo(
     () => [
       {

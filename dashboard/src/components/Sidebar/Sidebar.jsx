@@ -14,7 +14,7 @@ import { HOME } from "../../router/route-path";
 import TokenService from "../../services/token.service";
 
 const ListChildren = ({ link }) => {
-  const [headerRef, childrenRef,otherRef, setShowLinks, showLinks] = useHideShow();
+  const {headerRef, childrenRef, setShowLinks, showLinks} = useHideShow();
 
   return (
     <div onClick={() => setShowLinks((show) => !show)}>

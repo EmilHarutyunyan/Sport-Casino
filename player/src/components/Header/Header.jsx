@@ -35,21 +35,7 @@ const Header = () => {
     openModal: openModalLogin,
     closeModal: closeModalLogin,
   } = useModal();
-  const {
-    isOpen: isOpenForgot,
-    openModal: openModalForgot,
-    closeModal: closeModalForgot,
-  } = useModal();
-  // const {
-  //   isOpen: isOpenResetPass,
-  //   openModal: openModalResetPass,
-  //   closeModal: closeModalResetPass,
-  // } = useModal();
-  // const {
-  //   isOpen: isOpenRegister,
-  //   openModal: openModalRegister,
-  //   closeModal: closeModalRegister,
-  // } = useModal();
+
 
   const handleNavigate = useCallback((path) => {
     navigate(path)

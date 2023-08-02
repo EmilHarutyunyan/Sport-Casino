@@ -32,7 +32,7 @@ const useHideShow = () => {
     };
   }, [showLinks]);
 
-  return [headerRef, childrenRef, otherRef, setShowLinks, showLinks];
+  return {headerRef, childrenRef, otherRef, setShowLinks, showLinks};
 };
 
 export default useHideShow;
