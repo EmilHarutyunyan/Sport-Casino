@@ -14,6 +14,7 @@ import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   CREATE_PERSON,
+  EDIT_PERSON,
   VIEW_PERSON,
   WALLET_PERSON,
 } from "../../router/route-path";
@@ -23,6 +24,8 @@ import Pagination from "../../components/Pagination/Pagination";
 // Images
 import balanceImg from "../../assets/images/balance.png";
 import viewImg from "../../assets/images/view.png";
+import editImg from "../../assets/images/edit.png";
+
 import SelectCustom from "../../components/SelectCustom";
 import { useDispatch, useSelector } from "react-redux";
 import { getUsersByRole } from "../../app/features/user/userActions";
@@ -34,11 +37,12 @@ import { useState } from "react";
 const Agents = () => {
   const navigation = useNavigate();
   const dispatch = useDispatch();
-  const { agents, loading } = useSelector(selectUser);
+  const { agents, loading,userInfo } = useSelector(selectUser);
   const [isPending, startTransition] = useTransition();
   const [searchTerm, setSearchTerm] = useState("");
   const [filtered, setFiltered] = useState(agents);
   const [filterUser, setFilterUser] = useState([]);
+  const [myUsers, setMyUsers] = useState(false);
   const handleNavigation = useCallback(
     (path, state) => {
       navigation(path, { state });
@@ -95,6 +99,7 @@ const Agents = () => {
             row: { original: item },
           } = props;
 
+      
           return (
             <ActionWrap>
               <div
@@ -103,6 +108,13 @@ const Agents = () => {
                 }
               >
                 <img src={balanceImg} alt={"balance"} />
+              </div>
+              <div
+                onClick={() =>
+                  handleNavigation(`${EDIT_PERSON}/${item.id}`, roleMemo)
+                }
+              >
+                <img src={editImg} alt={"edit"} />
               </div>
               <div
                 onClick={() =>
@@ -142,15 +154,15 @@ const Agents = () => {
     return () => dispatch(setError(null));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-     useEffect(() => {
-       setFiltered(agents);
-       const filterParent = agents.map(user => {
-         return {value:user?.parent?.full_name, id:user?.parent.id}
-        })
-        
-        setFilterUser([{ value: "Filter by Super Agent",id:0 }, ...filterParent]);
-       // eslint-disable-next-line react-hooks/exhaustive-deps
-     }, [agents]);
+  useEffect(() => {
+    setFiltered(agents);
+    const filterParent = agents.map((user) => {
+      return { value: user?.parent?.full_name, id: user?.parent.id };
+    });
+
+    setFilterUser([{ value: "Filter by Super Agent", id: 0 }, ...filterParent]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [agents]);
   const handleChangeSearch = ({ target: { value } }) => {
     setSearchTerm(value);
     startTransition(() => {
@@ -164,21 +176,30 @@ const Agents = () => {
     });
   };
   const handleSelectFilter = (id) => {
-    if(id === 0) {
+    if (id === 0) {
       startTransition(() => {
         setFiltered(agents);
       });
     } else {
       startTransition(() => {
-        setFiltered(
-          agents.filter(
-            (item) =>
-              item.parent.id === id
-          )
-        );
+        setFiltered(agents.filter((item) => item.parent.id === id));
       });
     }
-  }
+  };
+  useEffect(() => {
+    if (myUsers) {
+      startTransition(() => {
+        setFiltered(agents.filter((item) => item.parent.id === userInfo.user.id));
+      });
+    } else {
+      startTransition(() => {
+        setFiltered(agents);
+      });
+
+
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myUsers]);
   if (loading) {
     return <Spinner />;
   }
@@ -196,7 +217,30 @@ const Agents = () => {
               placeholder="Full Name, Username"
             />
           </div>
+          <div className="radio-wrap">
+            <div>
+              <input
+                type="radio"
+                id="all-agents"
+                name="All agents"
+                checked={!myUsers}
+                onChange={() => setMyUsers(false)}
+              />
+              <label for="all-agents">All agents</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="my-agents"
+                name="My agents"
+                checked={myUsers}
+                onChange={() => setMyUsers(true)}
+              />
+              <label for="my-agents">My agents</label>
+            </div>
+          </div>
         </form>
+
         <BtnWrap>
           <button
             onClick={() =>
@@ -213,6 +257,7 @@ const Agents = () => {
             date={filterUser}
             onCustom={handleSelectFilter}
             activeData={"Filter by Super Agent"}
+            disabled={myUsers}
           />
         </BtnWrap>
       </FormWrap>

@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+// import { useDispatch, useSelector } from "react-redux";
 
 import { useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -18,12 +18,20 @@ import eyeShow from "../../../assets/images/eyeShow.png";
 import eyeHide from "../../../assets/images/eyeHide.png";
 import PlatformMost from "../../../components/PlatformMost";
 import { CALL_AGENT } from "../../../router/route-path";
+import Spinner from "../../../components/Spinner/Spinner";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectUser,
+  setError,
+  setMessage,
+} from "../../../app/features/user/userSlice";
+import { userLogin } from "../../../app/features/user/userActions";
 
-const Login = ({ closeModalLogin, openModalForgot, openModalRegister }) => {
+const Login = ({ closeModalLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
-  // const { loading, userInfo, error } = useSelector((state) => state.user)
-  // const dispatch = useDispatch();
-  // const navigate = useNavigate();
+  const { loading, userInfo, error, message } = useSelector(selectUser);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   // const location = useLocation();
   // const fromPage = location.state?.from?.pathname || "/";
 
@@ -32,43 +40,53 @@ const Login = ({ closeModalLogin, openModalForgot, openModalRegister }) => {
     handleSubmit,
 
     formState: { errors },
+    reset,
   } = useForm({
     mode: "onBlur",
     // onSubmit
     resolver: yupResolver(schema_signIn),
   });
 
-  console.log("errors :", errors);
+ 
 
   // redirect authenticated user to profile screen
-  // useEffect(() => {
+  useEffect(() => {
+    if (userInfo) {
+      dispatch(setMessage(null));
+      closeModalLogin();
+      // navigate(fromPage, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate, userInfo]);
 
-  //   if (userInfo) {
-  //     navigate(fromPage, { replace: true });
-  //   }
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [navigate, userInfo])
-
-  const submitForm = (data) => {
-  
-
-    // dispatch(userLogin(data))
-    // TokenService.setUser(data);
-    // // Demonstration
-    //  navigate(fromPage, { replace: true });
+  const submitForm = async (data) => {
+    dispatch(userLogin(data));
+    reset();
   };
+  useEffect(() => {
+    return () => {
+      dispatch(setError(null));
+      dispatch(setMessage(null));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <Wrapper>
       <Container>
         <h2>Welcome Back</h2>
+        {error && (
+          <ErrorMessage className="error-login" visible={error}>
+            {error}
+          </ErrorMessage>
+        )}
         <form onSubmit={handleSubmit(submitForm)}>
           <InputContainer>
-            {errors?.email?.message && (
-              <ErrorMessage visible={errors?.email?.message}>
-                {errors?.email?.message}
+            {errors?.user_name?.message && (
+              <ErrorMessage visible={errors?.user_name?.message}>
+                {errors?.user_name?.message}
               </ErrorMessage>
             )}
-            <InputWrap {...register("email")} placeholder="Email" />
+            <InputWrap {...register("user_name")} placeholder="User name" />
           </InputContainer>
           <InputContainer>
             {errors?.password?.message && (
@@ -101,24 +119,15 @@ const Login = ({ closeModalLogin, openModalForgot, openModalRegister }) => {
                   />
                 )}
               </EyeWrap>
-              <Link
-                to={CALL_AGENT}
-                target="_blank"
-                className="callAgent"
-                
-              >
+              <Link to={CALL_AGENT} target="_blank" className="callAgent">
                 Forgot password
               </Link>
             </InputEye>
           </InputContainer>
-          <button type="submit">Login</button>
+          <button type="submit">{loading ? <Spinner /> : "Login"}</button>
           <p className="info">
             You can Sign Up
-            <Link
-              to={CALL_AGENT}
-              target="_blank"
-              
-            >
+            <Link to={CALL_AGENT} target="_blank">
               here
             </Link>
             .

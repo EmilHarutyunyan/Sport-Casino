@@ -1,10 +1,10 @@
 import React, { useCallback, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/swiper-bundle.css";
 import { ArrowLeftIcon, ArrowRightIcon } from "../Icons/Icons";
 import { SwiperCustomNav, Wrapper } from "./HeroBanner.styles";
 import { ImgWrapper } from "../../themes/GlobalStyle";
 import imageSwiper from "../../assets/images/swiperImg.png"
+import "swiper/swiper-bundle.css";
 const HeroBanner = () => {
   const swiperRef = useRef(null);
   const [currentSlide, setCurrentSlide] = useState(0);

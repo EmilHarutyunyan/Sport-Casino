@@ -70,6 +70,7 @@ export const GlobalStyle = createGlobalStyle`
     all: unset;
     text-decoration: none;
     cursor: pointer;
+    
   }
 
   a:hover {
@@ -112,6 +113,22 @@ export const GlobalStyle = createGlobalStyle`
     padding: 0 15px;
     margin: 0 auto;
   }
+
+   /* Gradient Scrollbar */
+  body::-webkit-scrollbar {
+    width: 8px;
+    border-radius: 8px;
+  }
+
+  body::-webkit-scrollbar-track {
+    background: var(--gradient-blue);
+  }
+
+  body::-webkit-scrollbar-thumb {
+    background: transparent; /* opacity: 0; should do the thing either */
+    box-shadow: 0px 0px 0px 100000vh var(----color-dark-gray);
+    
+  }
 `;
 export const ImgWrapper = styled.img.attrs((props) => ({
   src: props?.src,
@@ -123,4 +140,5 @@ export const ImgWrapper = styled.img.attrs((props) => ({
   object-fit: ${(props) => props?.objectFit};
   max-width: ${(props) => props?.maxWidth};
   margin: ${(props) => (props?.center ? "0 auto" : "none")};
+
 `;

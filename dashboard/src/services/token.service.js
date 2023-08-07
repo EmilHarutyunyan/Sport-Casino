@@ -19,12 +19,18 @@ class TokenService {
       "user",
       JSON.stringify({ ...userInfo, user: newBalance })
     );
-    return { ...userInfo, user:newBalance };
+    return { ...userInfo, user: newBalance };
   }
 
   static updateLocalAccessToken(token) {
     let user = JSON.parse(localStorage.getItem("user"));
     user.access = token;
+    localStorage.setItem("user", JSON.stringify(user));
+  }
+  static updateUser(newUser) {
+    
+    let user = JSON.parse(localStorage.getItem("user"));
+    user.user = newUser;
     localStorage.setItem("user", JSON.stringify(user));
   }
 
@@ -42,7 +48,7 @@ class TokenService {
   static getRole() {
     const user = this.getUser();
 
-    return user?.user ? user.user.role?.role : null;
+    return user?.user ? user.user.role : null;
   }
 }
 

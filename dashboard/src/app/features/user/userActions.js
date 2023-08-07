@@ -111,7 +111,7 @@ export const createSuperAgent = createAsyncThunk(
           "Content-Type": "application/json",
         },
       };
-      debugger
+      
       const { data } = await axiosInstance.post(
         `${API_ENDPOINT}admin/create-super-agent`,
         person,
@@ -191,8 +191,8 @@ export const createPlayer = createAsyncThunk(
   }
 );
 
-export const changeUserInfo = createAsyncThunk(
-  "user/changeUserInfo",
+export const changeUserDetails = createAsyncThunk(
+  "user/changeUserDetails",
   async (person, { rejectWithValue, dispatch }) => {
     try {
       // configure header's Content-Type as JSON
@@ -203,13 +203,48 @@ export const changeUserInfo = createAsyncThunk(
       };
 
       const { data } = await axiosInstance.post(
-        `${API_ENDPOINT}user/change-user-information`,
+        `${API_ENDPOINT}user-profile-information-change`,
         person,
         config
       );
-      return data;
+      dispatch(getUserDetails(person.user_id));
+      return { message: "Change Done" };
     } catch (error) {
-    
+      // return custom error message from API if any
+      if (error?.response && error.response?.data?.message) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);
+
+export const changeMyProfile = createAsyncThunk(
+  "user/changeMyProfile",
+  async (person, { rejectWithValue, dispatch }) => {
+    try {
+      debugger;
+      // configure header's Content-Type as JSON
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      const { data } = await axiosInstance.post(
+        `${API_ENDPOINT}user-profile-information-change`,
+        person,
+        config
+      );
+      // dispatch
+      
+      const user = TokenService.getUser();
+      const newUser = { ...user.user, ...data.message.user };
+      TokenService.updateUser(newUser);
+      dispatch(updateUserInfo({token:user.token, user:newUser}));
+      return {message: "Change My Profile"};
+    } catch (error) {
       // return custom error message from API if any
       if (error?.response && error.response?.data?.message) {
         return rejectWithValue(error.response.data.message);
@@ -326,7 +361,7 @@ export const getUserDetails = createAsyncThunk(
         },
         config
       );
-      debugger
+      
       return data.message?.user;
     } catch (error) {
       if (error.response && error.response.data.message) {
@@ -371,7 +406,7 @@ export const coinTransfer = createAsyncThunk(
   "user/coinTransfer",
   async (ballance, { rejectWithValue,dispatch }) => {
     
-  console.log("message :", ballance);
+ 
     try {
       // configure authorization header with user's token
       const config = {
@@ -386,7 +421,7 @@ export const coinTransfer = createAsyncThunk(
         config
       );
       if (data.message)  {
-        debugger
+
         const userBalance = TokenService.getUserBalance();
         const newBalance = ballance.switchFlag
           ? userBalance - ballance.ballance.amount
@@ -411,7 +446,7 @@ export const coinTransfer = createAsyncThunk(
 
 export const coinWithdraw = createAsyncThunk(
   "user/coinWithdraw",
-  async (id, { rejectWithValue }) => {
+  async (ballance, { rejectWithValue, dispatch }) => {
     try {
       // configure authorization header with user's token
       const config = {
@@ -422,12 +457,22 @@ export const coinWithdraw = createAsyncThunk(
 
       const { data } = await axiosInstance.post(
         `${API_ENDPOINT}coin-withdrawl`,
-        {
-          withdrawl_request: id,
-        },
+        ballance.ballance,
         config
       );
-      return data[0];
+      if (data.message) {
+        const userBalance = TokenService.getUserBalance();
+        const newBalance = ballance.switchFlag
+          ? userBalance - ballance.ballance.amount
+          : userBalance + ballance.ballance.amount;
+        const updateBalance = TokenService.updateUserBalance(newBalance);
+
+        dispatch(updateUserInfo(updateBalance));
+        return ballance.message;
+      }
+      if (!data.message) {
+        throw new Error("Failed");
+      }
     } catch (error) {
       if (error.response && error.response.data.message) {
         return rejectWithValue(error.response.data.message);

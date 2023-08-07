@@ -59,6 +59,7 @@ export const BtnWrap = styled.div`
 export const InputContainer = styled.div`
   position: relative;
   margin-bottom: 42px;
+  text-transform: capitalize;
   .PhoneInput {
     display: flex;
     align-items: center;
@@ -71,7 +72,13 @@ export const InputContainer = styled.div`
     padding: 8px 40px 8px 16px;
     min-height: 40px;
   }
-
+  & .phone-parent {
+    display: flex;
+    align-items: center;
+   
+    gap: 15px;
+  }
+  
   &.inputImage {
     display: flex;
     align-items: center;

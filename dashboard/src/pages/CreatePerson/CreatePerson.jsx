@@ -40,9 +40,6 @@ const CreatePerson = () => {
   const [phone, setPhone] = useState();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  if (!roleState && !roleState?.role) {
-    navigate(-1);
-  }
 
   const {
     register,

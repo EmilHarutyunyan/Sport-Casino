@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { changeUserPass, coinTransfer, coinWithdraw, createAgent, createPlayer, createSuperAgent, getUserDetails, getUsersByRole, registerUser, sendWallet, userLogin } from './userActions'
+import { changeMyProfile, changeUserDetails, changeUserPass, coinTransfer, coinWithdraw, createAgent, createPlayer, createSuperAgent, getUserDetails, getUsersByRole, registerUser, userLogin } from './userActions'
 import TokenService from "../../../services/token.service";
 // initialize userToken from local storage
 
@@ -42,6 +42,9 @@ const userSlice = createSlice({
     },
     updateUserInfo:(state,{payload}) => {
       state.userInfo = payload
+    },
+    resetUserDetails:(state,{payload}) => {
+      state.userDetails = payload;
     }
   },
   extraReducers: (builder) => {
@@ -126,7 +129,7 @@ const userSlice = createSlice({
       })
       .addCase(getUserDetails.fulfilled, (state, { payload }) => {
         state.loading = false;
-        debugger;
+
         state.userDetails = payload;
       })
       .addCase(getUserDetails.rejected, (state, { payload }) => {
@@ -140,6 +143,10 @@ const userSlice = createSlice({
       .addCase(getUsersByRole.fulfilled, (state, { payload }) => {
         state.loading = false;
         state[payload.role] = payload.users;
+      })
+      .addCase(getUsersByRole.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
       })
       .addCase(coinTransfer.pending, (state) => {
         state.loading = true;
@@ -164,12 +171,38 @@ const userSlice = createSlice({
       .addCase(coinWithdraw.rejected, (state, { payload }) => {
         state.loading = false;
         state.error = payload;
+      })
+      .addCase(changeUserDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changeUserDetails.fulfilled, (state, { payload }) => {
+        debugger;
+        state.loading = false;
+        state.message = payload.message;
+      })
+      .addCase(changeUserDetails.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
+      })
+      .addCase(changeMyProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changeMyProfile.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.message = payload.message;
+      })
+      .addCase(changeMyProfile.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
       });
 
   },
 })
 
-export const { logout, setMessage, setError, updateUserInfo } = userSlice.actions;
+export const { logout, setMessage, setError, updateUserInfo, resetUserDetails } =
+  userSlice.actions;
 
 export const selectUser = (state) => state.user;
 

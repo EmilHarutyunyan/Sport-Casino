@@ -1,77 +1,61 @@
-import axios from 'axios'
-import { API_ENDPOINT } from '../config/config';
-import TokenService from './token.service';
-
-
-
-
+import axios from "axios";
+import { API_ENDPOINT } from "../config/config";
+import TokenService from "./token.service";
+import jwt_decode from "jwt-decode";
 
 const axiosInstance = axios.create({
-    baseURL: API_ENDPOINT,
-    headers: {
-        "Content-Type": "application/json",
-    },
-
+  baseURL: API_ENDPOINT,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-
-
 axiosInstance.interceptors.request.use(
-    (config) => {
-        let authTokens = TokenService.getUser() || "";
-        if (authTokens) {
+  async (config) => {
+    let authTokens = TokenService.getUser() || "";
 
-            config.headers["Authorization"] = `Bearer ${authTokens.JwtToken}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
+    const user = jwt_decode(authTokens.token);
+    // 5 minute
+    const isExpired = new Date(user.exp * 1000) - Date.now() < 3000000;
+    debugger
+    if (authTokens) {
+      config.headers["token"] = `${authTokens.token}`;
     }
-);
-
-axiosInstance.interceptors.response.use(
-    (res) => {
-        return res;
-    },
-    async (err) => {
-        const originalConfig = err.config;
-
-        if (
-            originalConfig.url !== `${API_ENDPOINT}Account/Authorize` &&
-            err.response
-        ) {
-            // Access Token was expired
-            if (err.response.status === 401 && !originalConfig._retry) {
-                originalConfig._retry = true;
-                let authTokens = TokenService.getUser() || "";
-
-                try {
-                    const response = await axiosInstance.post(
-                        `${API_ENDPOINT}Account/RefreshToken`,
-                        {
-                            refreshToken: authTokens.RefreshToken,
-                        }
-                    );
-
-                    const newToken = response.data.item;
-                    TokenService.setUser({
-                        ...authTokens,
-                        JwtToken: newToken.jwtToken,
-                        JwtTokenExpiresUtc: newToken.jwtTokenExpiresUtc,
-                        RefreshToken: newToken.refreshToken,
-                        RefreshTokenExpiresUtc: newToken.refreshTokenExpiresUtc,
-                    });
-
-                    return axiosInstance(originalConfig);
-                } catch (_error) {
-                    return Promise.reject(_error);
-                }
-            }
+    if (isExpired) {
+      let config = {
+        method: "post",
+        url: `${API_ENDPOINT}refresh-token`,
+        headers: {
+          Accept: "application/json",
+          token: `${authTokens.token}`,
+        },
+      };
+      try {
+        const response = await axios.request(config);
+  
+        const newToken = response.data.message;
+        TokenService.setUser({
+          ...authTokens,
+          token: newToken.token,
+        });
+        
+      } catch (error) {
+        if(error.response.status === 401) {
+          TokenService.removeUser()
+          window.location.reload(false)
+        
         }
+      console.log('error :', error);
+         
+      }
 
-        return Promise.reject(err);
     }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
 export default axiosInstance;

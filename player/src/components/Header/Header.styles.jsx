@@ -10,7 +10,11 @@ export const Container = styled.div`
   justify-content: space-between;
   flex: 1;
 `;
-export const LogoWrap = styled.div``;
+export const LogoWrap = styled.div`
+  a {
+    display: block;
+  }
+`;
 
 export const Nav = styled.nav``;
 
@@ -23,8 +27,9 @@ export const ActionNav = styled.div`
     padding: 12px 32px;
     transition: var(--transition);
     border-radius: 8px;
-    transition: background-color 0.3s ease;
+    transition: background 0.3s ease;
     :hover {
+      transition: background 0.3s ease;
       color: var(--color-gray);
       background: var(--gradient-gold);
     }
@@ -32,11 +37,11 @@ export const ActionNav = styled.div`
   ul li.defaultList a {
     padding: 12px 32px !important;
     border-radius: 8px;
-    transition: background-color 0.3s ease;
+    transition: background 0.3s ease;
     :hover {
       color: var(--color-gray);
       background: var(--gradient-gold);
-      transition: background-color 0.3s ease;
+      transition: background 0.3s ease;
     }
   }
   a ul:last-child {
@@ -84,7 +89,7 @@ export const List = styled.li`
       border: 1px solid var(--color-blue);
       border-radius: 8px;
     }
-    
+
     & .active {
       background: linear-gradient(to right, #2c94fc, #6a3bea);
       border: none;
@@ -109,5 +114,13 @@ export const List = styled.li`
       border-image-slice: 1;
       border-image-source: linear-gradient(to right, #2c94fc, #6a3bea);
     }
+  }
+  p:hover {
+    transition: var(--transition);
+    color: var(--color-blue);
+  }
+  a:hover {
+    transition: var(--transition);
+    color: var(--color-blue);
   }
 `;

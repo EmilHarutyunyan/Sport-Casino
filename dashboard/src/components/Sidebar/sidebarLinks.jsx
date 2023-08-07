@@ -18,14 +18,15 @@ import {
   SPORTS_BETS,
   SPORTS_STATS,
   SUPPER_AGENT,
-  TRANSACTIONS,
-  TRANSACTIONS_DEPOSIT,
+  // TRANSACTIONS,
+  // TRANSACTIONS_DEPOSIT,
   TRANSACTIONS_MANUAL_DEPOSIT,
   TRANSACTIONS_MANUAL_WITHDRAW,
-  TRANSACTIONS_WITHDRAW,
+  // TRANSACTIONS_WITHDRAW,
 } from "../../router/route-path";
-import TokenService from "../../services/token.service";
-import { roleMemo, roles } from "../../utils/utils";
+// import TokenService from "../../services/token.service";
+import { roles } from "../../utils/utils";
+// import { roleMemo, roles } from "../../utils/utils";
 
 export const sidebarLinks = [
   {

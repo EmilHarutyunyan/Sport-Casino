@@ -15,13 +15,19 @@ import { formatDateMDY, roleMemo, roles } from '../../utils/utils';
 import { Link, useNavigate } from 'react-router-dom';
 // Images
 import balanceImg from "../../assets/images/balance.png";
+import viewImg from "../../assets/images/view.png";
+import editImg from "../../assets/images/edit.png";
 
-import { CREATE_PERSON, VIEW_PERSON, WALLET_PERSON } from '../../router/route-path';
+import {
+  CREATE_PERSON,
+  VIEW_PERSON,
+  WALLET_PERSON,
+  EDIT_PERSON,
+} from "../../router/route-path";
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser, setError } from '../../app/features/user/userSlice';
 import Spinner from '../../components/Spinner/Spinner';
-import viewImg from "../../assets/images/view.png";
 import { getUsersByRole } from '../../app/features/user/userActions';
 import { useTransition } from 'react';
 import { useState } from 'react';
@@ -89,6 +95,13 @@ const SuperAgents = () => {
                 }
               >
                 <img src={balanceImg} alt={"balance"} />
+              </div>
+              <div
+                onClick={() =>
+                  handleNavigation(`${EDIT_PERSON}/${item.id}`, roleMemo)
+                }
+              >
+                <img src={editImg} alt={"edit"} />
               </div>
               <div
                 onClick={() =>

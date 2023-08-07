@@ -110,7 +110,9 @@ export const FormWrap = styled.div`
   flex-wrap: wrap;
   align-items: flex-start;
   form {
-  
+    display: flex;
+    align-items: center;
+    gap: 40px;
     label {
       display: block;
       font-weight: 400;
@@ -118,7 +120,21 @@ export const FormWrap = styled.div`
       line-height: 20px;
       margin-bottom: 4px;
     }
-    
+    .radio-wrap {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      margin-top: 25px;
+      & > div {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      input[type="radio"] {
+        width: 18px;
+        accent-color: var(--color-dark-gray);
+      }
+    }
   }
 `;
 export const BtnWrap = styled.div`

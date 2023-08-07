@@ -8,6 +8,7 @@ const ModalCustom = ({ children, closeModal, isOpen=false }) => {
     if(isOpen) {
       setTimeout(() => {
         setShow(true)
+        
       }, 1);
     }
   },[isOpen])

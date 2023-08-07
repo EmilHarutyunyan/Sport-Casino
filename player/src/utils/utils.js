@@ -5,3 +5,10 @@ export const formatDateMDY = (data) => {
     year: "numeric",
   });
 };
+
+export const roles = {
+  admin: "admin",
+  super_agent: "super_agent",
+  agent: "agent",
+  player: "player",
+};

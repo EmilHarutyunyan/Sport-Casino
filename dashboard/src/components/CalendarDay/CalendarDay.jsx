@@ -6,7 +6,7 @@ import DayCustom from '../DayCustom/DayCustom'
 import { selectDate } from '../../utils/date'
 const CalendarDay = () => {
   const [customDate,setCustomDate] = useState(false)
-  const [valueDate,setValueDate] = useState("")
+  // const [valueDate,setValueDate] = useState("")
 
   return (
     <>

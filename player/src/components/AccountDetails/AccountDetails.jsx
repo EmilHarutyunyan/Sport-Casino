@@ -1,95 +1,64 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 // Styles
 import {
-  ErrorMessage,
   InputContainer,
   InputWrap,
   Wrapper,
-  BtnWrap,
 } from "./AccountDetails.styles";
 import "react-phone-number-input/style.css";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import { schema_account_details } from "./schema";
 import PhoneInput from "react-phone-number-input";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../app/features/user/userSlice";
 const AccountDetails = () => {
-  const [phone, setPhone] = useState();
-  const {
-    register,
-    handleSubmit,
-    clearErrors,
-    formState: { errors },
-    setValue,
-  } = useForm({
-    mode: "onBlur",
-    resolver: yupResolver(schema_account_details, {
-      stripUnknown: true,
-      abortEarly: false,
-    }),
-  });
-    const handleInputChange = useCallback(
-      (name, val) => {
-        setValue(name, val, { shouldDirty: true });
-        clearErrors(name);
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [phone]
-    );
-  const submitForm = (data) => {
 
-  };
+  const {userInfo} = useSelector(selectUser)
+
   return (
     <Wrapper>
       <p>Account details</p>
-      <form onSubmit={handleSubmit(submitForm)}>
+      <form>
         <InputContainer>
           <label>
             Username<span>*</span>
           </label>
-          {errors?.userName?.message && (
-            <ErrorMessage visible={errors?.userName?.message}>
-              {errors?.userName?.message}
-            </ErrorMessage>
-          )}
+
           <InputWrap
-            {...register("userName")}
             placeholder="Username"
             disabled
+            value={userInfo?.user.user_name}
           />
         </InputContainer>
         <InputContainer>
           <label>
             Email<span>*</span>
           </label>
-          {errors?.email?.message && (
-            <ErrorMessage visible={errors?.email?.message}>
-              {errors?.email?.message}
-            </ErrorMessage>
-          )}
-          <InputWrap {...register("email")} placeholder="Email" disabled />
+
+          <InputWrap
+            placeholder="Email"
+            disabled
+            value={userInfo?.user.email}
+          />
         </InputContainer>
         <InputContainer>
           <label>
             Phone number<span>*</span>
           </label>
-          {errors?.phoneNumber?.message && (
-            <ErrorMessage visible={errors?.phoneNumber?.message}>
-              {errors?.phoneNumber?.message}
-            </ErrorMessage>
-          )}
+
           <PhoneInput
-            value={phone}
-            onChange={(value) => {
-              handleInputChange("phoneNumber", value);
-              setPhone(value);
-            }}
+            value={userInfo?.user.phone_number}
             disabled
             placeholder="Phone Number"
           />
-          <input
-            type="tel"
-            {...register("phoneNumber")}
-            style={{ display: "none" }}
+          <input type="tel" style={{ display: "none" }} disabled />
+        </InputContainer>
+        <InputContainer>
+          <label>
+            Full name<span>*</span>
+          </label>
+
+          <InputWrap
+            placeholder="Full name"
+            value={userInfo?.user.full_name}
             disabled
           />
         </InputContainer>

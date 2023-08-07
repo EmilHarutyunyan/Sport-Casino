@@ -43,14 +43,14 @@ const Header = () => {
               <UserAction />
             </List>
           </Lists>
-          <Lists className="lang">
+          {/* <Lists className="lang">
             <List>
               <span className="active">EN</span>
             </List>
             <List>
               <span>বাংলা</span>
             </List>
-          </Lists>
+          </Lists> */}
         </Nav>
       </Container>
     </Wrapper>

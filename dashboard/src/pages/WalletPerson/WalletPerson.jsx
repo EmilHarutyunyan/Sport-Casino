@@ -20,16 +20,27 @@ import { useForm } from "react-hook-form";
 import { schema_wallet } from "./schema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch, useSelector } from "react-redux";
-import { coinTransfer, coinWithdraw, sendWallet } from "../../app/features/user/userActions";
-import { selectUser, setError, setMessage } from "../../app/features/user/userSlice";
+import {
+  coinTransfer,
+  coinWithdraw,
+  getUserDetails,
+  // sendWallet,
+} from "../../app/features/user/userActions";
+import {
+  resetUserDetails,
+  selectUser,
+  setError,
+  setMessage,
+} from "../../app/features/user/userSlice";
 import { ToastContainer } from "react-toastify";
 import { notify } from "../../utils/utils";
 import Spinner from "../../components/Spinner/Spinner";
 const WalletPerson = () => {
   const { id } = useParams();
-  const [switchFlag,setSwitchFlag] = useState(true)
-  const {userInfo,message,loading} = useSelector(selectUser)
-  const {state :info } = useLocation();
+  const [switchFlag, setSwitchFlag] = useState(true);
+  const { userInfo, message, loading, userDetails } = useSelector(selectUser);
+  const { state } = useLocation();
+  const [ info]= useState(state);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   if (!id) {
@@ -50,36 +61,43 @@ const WalletPerson = () => {
       abortEarly: false,
     }),
   });
-   const submitForm = async (data) => {
-  
- 
-  
+  const submitForm = async (data) => {
     // await dispatch
-    let ballance = switchFlag ? { ...data, sender: userInfo?.user.id, recipient: id } :{
-         ...data,
-         recipient: userInfo?.user.id,
-         sender: id,
-       } ;
-  
-    let message = switchFlag ? {message:'Deposit Done'} : {message: "WithDraw Done"}
-    
-    dispatch(coinTransfer({ ballance, message, switchFlag }));
-    reset()
-   };
-    useEffect(() => {
-      if (message) {
-        notify(message);
-        dispatch(setMessage(null));
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [message]);
-    useEffect(() => {
-      return () => {
-        dispatch(setError(null));
-        dispatch(setMessage(null));
-      };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    let ballance = switchFlag
+      ? { ...data, sender: userInfo?.user.id, recipient: id }
+      : {
+          ...data,
+          recipient: userInfo?.user.id,
+          sender: id,
+        };
+
+    let message = switchFlag
+      ? { message: "Deposit Done" }
+      : { message: "WithDraw Done" };
+
+    if (switchFlag) {
+      dispatch(coinTransfer({ ballance, message, switchFlag }));
+    } else {
+      dispatch(coinWithdraw({ ballance, message, switchFlag }));
+    }
+    reset();
+  };
+  useEffect(() => {
+    if (message) {
+      notify(message);
+      dispatch(getUserDetails(info.id))
+      dispatch(setMessage(null));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [message]);
+  useEffect(() => {
+    return () => {
+      dispatch(setError(null));
+      dispatch(setMessage(null));
+      dispatch(resetUserDetails(null));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <Wrapper>
       <ToastContainer
@@ -99,7 +117,10 @@ const WalletPerson = () => {
         <h2>{info?.user_name}</h2>
       </HeadWrap>
       <InfoWrap>
-        <CashCoinBalance disableCase={true} cash={info?.ballance} />
+        <CashCoinBalance
+          disableCase={true}
+          cash={userDetails?.balance ? userDetails?.balance : info?.balance}
+        />
         <div className="switchWrap">
           <p>WithDraw</p>
           <label className="switch">

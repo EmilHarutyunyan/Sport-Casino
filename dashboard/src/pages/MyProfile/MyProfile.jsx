@@ -1,24 +1,34 @@
 import React, { useCallback, useState } from "react";
 // Styles
 import "react-phone-number-input/style.css";
-import {BtnWrap, Container, ErrorMessage, ErrorWrap, FormWrap, InputContainer, InputWrap, Wrapper} from "./MyProfile.styles"
-import Title from '../../components/Title'
+import {
+  BtnWrap,
+  Container,
+  ErrorMessage,
+  ErrorWrap,
+  FormWrap,
+  InputContainer,
+  InputWrap,
+  Wrapper,
+} from "./MyProfile.styles";
+import Title from "../../components/Title";
 import { ToastContainer } from "react-toastify";
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
-import { schema_password, schema_profile } from './schem';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectUser, setMessage } from '../../app/features/user/userSlice';
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import { schema_profile } from "./schem";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser, setMessage } from "../../app/features/user/userSlice";
 import PhoneInput from "react-phone-number-input";
-import { changeUserInfo, changeUserPass } from "../../app/features/user/userActions";
+import {
+  changeMyProfile,
+} from "../../app/features/user/userActions";
 import { useEffect } from "react";
 import { notify } from "../../utils/utils";
-
 
 const MyProfile = () => {
   const { userInfo, error, message } = useSelector(selectUser);
   const [phone, setPhone] = useState(userInfo?.user.phone_number);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -35,29 +45,22 @@ const MyProfile = () => {
     defaultValues: {
       full_name: userInfo?.user.full_name || "",
       phone_number: userInfo?.user.phone_number || "",
+      user_name: userInfo?.user.user_name || "",
       email: userInfo?.user.email || "",
     },
   });
-  const {
-    register:registerPass,
-    handleSubmit:handleSubmitPass,
-    formState: { errors:errorsPass },
-  } = useForm({
-    mode: "onBlur",
-    // onSubmit
-    resolver: yupResolver(schema_password),
-  });
-  const submitForm = async (data) => {
 
-    dispatch(changeUserInfo(data));
+  const submitForm = async (data) => {
+    let newData = { user_id: userInfo?.user.id };
+    for (let key in data) {
+      if (data[key]) {
+        newData[key] = data[key];
+
+      }
+    }
+    dispatch(changeMyProfile(newData));
     // const
   };
-  const submitFormPass = async (data) => {
-    
-     
-     dispatch(changeUserPass(data));
-     // const
-   };
   const handleInputChange = useCallback(
     (name, val) => {
       setValue(name, val, { shouldDirty: true });
@@ -66,13 +69,13 @@ const MyProfile = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [phone]
   );
-    useEffect(() => {
-      if (message) {
-        notify(message);
-        dispatch(setMessage(null));
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [message]);
+  useEffect(() => {
+    if (message) {
+      notify(message);
+      dispatch(setMessage(null));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [message]);
   return (
     <Wrapper>
       <Title title={"My profile"} />
@@ -113,6 +116,22 @@ const MyProfile = () => {
             />
           </InputContainer>
           <InputContainer>
+            <label>User Name</label>
+
+            {errors?.user_name?.message && (
+              <ErrorMessage visible={errors?.user_name?.message}>
+                {errors?.user_name?.message}
+              </ErrorMessage>
+            )}
+
+            <InputWrap
+              error={errors?.user_name?.message}
+              placeholder="User name"
+              {...register("user_name")}
+              defaultValue={userInfo?.user.user_name}
+            />
+          </InputContainer>
+          <InputContainer>
             <label>Email</label>
             {errors?.email?.message && (
               <ErrorMessage visible={errors?.email?.message}>
@@ -148,13 +167,26 @@ const MyProfile = () => {
               style={{ display: "none" }}
             />
           </InputContainer>
+          <InputContainer>
+            <label>New password</label>
+            {errors?.password?.message && (
+              <ErrorMessage visible={errors?.password?.message}>
+                {errors?.password?.message}
+              </ErrorMessage>
+            )}
+            <InputWrap
+              type="password"
+              error={errors?.password?.message}
+              {...register("password")}
+            />
+          </InputContainer>
         </Container>
         <BtnWrap>
           <button type="submit"> Save</button>
         </BtnWrap>
       </FormWrap>
-      <Title title={"Password"} fontSize={'24px'} />
-      <FormWrap onSubmit={handleSubmitPass(submitFormPass)}>
+      {/* <Title title={"Password"} fontSize={"24px"} /> */}
+      {/* <FormWrap onSubmit={handleSubmitPass(submitFormPass)}>
         
         <Container>
           <InputContainer>
@@ -202,9 +234,9 @@ const MyProfile = () => {
         <BtnWrap>
           <button type="submit">Save</button>
         </BtnWrap>
-      </FormWrap>
+      </FormWrap> */}
     </Wrapper>
   );
-}
+};
 
-export default MyProfile
+export default MyProfile;

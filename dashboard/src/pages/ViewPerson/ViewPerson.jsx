@@ -34,6 +34,7 @@ const ViewPerson = () => {
   useEffect(() => {
     dispatch(getUserDetails(id));
     return () => setData(null)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     

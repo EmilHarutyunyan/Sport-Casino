@@ -1,7 +1,8 @@
 import styled from "styled-components";
 export const Wrapper = styled.div`
   position: relative;
-  background: var(--color-dark-gray);
+  background: ${(props) =>
+    props?.disabled ? "#42464C" : `var(--color-dark-gray)`};
   border: 1px solid var(--color-white);
   border-radius: 8px;
   padding: 8px 16px;
@@ -9,6 +10,7 @@ export const Wrapper = styled.div`
   font-size: 18px;
   line-height: 27px;
   width: ${(props) => props?.width};
+  pointer-events: ${(props) => (props?.disabled ? "none" : "auto")};
 `;
 export const NavHead = styled.div`
   display: flex;

@@ -12,7 +12,7 @@ import { CALL_AGENT, DEPOSIT, FUND_IN_OUT, HOME,  NOTIFICATIONS, NOT_FOUND_PAGE,
 // import TokenService from "../services/token.service";
 // Pages
 import {
-  ErrorPage,
+  // ErrorPage,
   FundInOut,
   Home,
   // Login,

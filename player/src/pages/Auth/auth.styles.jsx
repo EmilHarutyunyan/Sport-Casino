@@ -70,7 +70,7 @@ export const InputContainer = styled.div`
   position: relative;
   margin-bottom: 42px;
     input {
-      padding: 8px 40px 8px 43px;
+      padding: 8px 40px 8px 20px;
     }
   
   .PhoneInput {
@@ -168,6 +168,12 @@ export const ErrorMessage = styled.div`
   opacity: ${(props) => (props.visible ? "1" : "0")};
   position: absolute;
   top: 120%;
+  &.error-login {
+    text-align: center;
+    position: inherit;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
 `;
 
 export const InputEye = styled.div`
@@ -188,6 +194,6 @@ export const InputEye = styled.div`
 
 export const EyeWrap = styled.div`
   position: absolute;
-  right: 10px;
-  top: 10px;
+  right: 3%;
+  top: 14%;
 `;

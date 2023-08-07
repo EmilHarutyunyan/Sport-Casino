@@ -15,16 +15,25 @@ import { ImgWrapper } from "../../themes/GlobalStyle";
 import logo from "../../assets/images/logo.png";
 import { mainLinks } from "./dataLinks";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { CONTACT_US, WITHDRAW, DEPOSIT, CALL_AGENT } from "../../router/route-path";
+import {
+  CONTACT_US,
+  WITHDRAW,
+  DEPOSIT,
+  CALL_AGENT,
+  NOTIFICATIONS,
+} from "../../router/route-path";
 import ModalCustom from "../ModalCustom";
 import ContactUs from "../ContactUs";
 import { Login } from "../../pages";
 // import { ResetPassword, ForgotPassword, Register } from "../../pages";
 import UserAction from "../UserAction/UserAction";
 import { BalanceIcon } from "../Icons/Icons";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../app/features/user/userSlice";
 
 const Header = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { userInfo } = useSelector(selectUser);
   const {
     isOpen: isOpenContact,
     openModal: openModalContact,
@@ -36,11 +45,10 @@ const Header = () => {
     closeModal: closeModalLogin,
   } = useModal();
 
-
   const handleNavigate = useCallback((path) => {
-    navigate(path)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+    navigate(path);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <Wrapper>
       <Container className="main-container">
@@ -49,8 +57,8 @@ const Header = () => {
             <ImgWrapper
               src={logo}
               alt="logo"
-              width={"62px"}
-              height={"28px"}
+              width={"100px"}
+              height={"auto"}
               objectFit={"contain"}
               loading={"lazy"}
             />
@@ -66,51 +74,61 @@ const Header = () => {
                   </List>
                 );
               }
+
               return (
                 <List key={item.id}>
                   <NavLink to={item.url}>{item.name}</NavLink>
                 </List>
               );
             })}
+            {userInfo && (
+              <List>
+                <NavLink to={NOTIFICATIONS}>Notifications</NavLink>
+              </List>
+            )}
           </Lists>
         </Nav>
         <ActionNav>
           <Lists>
-            <List className="defaultList">
-              <p onClick={openModalLogin}>Login</p>
-            </List>
-            <List className="defaultList">
-              <Link to={CALL_AGENT} target="_blank">Sign Up</Link>
-            </List>
-            <List className="winDep">
-              <NavLink to={WITHDRAW}>Withdraw</NavLink>
-            </List>
-            <List className="winDep">
-              <NavLink to={DEPOSIT}>Deposit</NavLink>
-            </List>
-            <List className="dFlex">
-              <BalanceIcon />
-              Balance: {"0.00"}
-            </List>
-            <List>
-              <UserAction />
-            </List>
-          </Lists>
-          <Lists>
-            <List>
-              <span className="active">EN</span>
-            </List>
-            <List>
-              <span>বাংলা</span>
-            </List>
+            {!userInfo && (
+              <>
+                <List className="defaultList">
+                  <p onClick={openModalLogin}>Login</p>
+                </List>
+                <List className="defaultList">
+                  <Link to={CALL_AGENT} target="_blank">
+                    Sign Up
+                  </Link>
+                </List>
+              </>
+            )}
+            {userInfo && (
+              <>
+                <List className="winDep">
+                  <NavLink to={WITHDRAW}>Withdraw</NavLink>
+                </List>
+                <List className="winDep">
+                  <NavLink to={DEPOSIT}>Deposit</NavLink>
+                </List>
+                <List className="dFlex">
+                  <BalanceIcon />
+                  Balance: {(userInfo && userInfo.user.balance) || "0"}
+                </List>
+                <List>
+                  <UserAction player={userInfo?.user} />
+                </List>
+              </>
+            )}
           </Lists>
         </ActionNav>
       </Container>
+
       {isOpenContact && (
         <ModalCustom closeModal={closeModalContact} isOpen={isOpenContact}>
           <ContactUs />
         </ModalCustom>
       )}
+
       {isOpenLogin && (
         <ModalCustom closeModal={closeModalLogin} isOpen={isOpenLogin}>
           <Login
@@ -120,24 +138,6 @@ const Header = () => {
           />
         </ModalCustom>
       )}
-      {/* {isOpenRegister && (
-        <ModalCustom closeModal={closeModalRegister} isOpen={isOpenRegister}>
-          <Register
-            closeModalRegister={closeModalRegister}
-            openModalLogin={openModalLogin}
-          />
-        </ModalCustom>
-      )} */}
-      {/* {isOpenForgot && (
-        <ModalCustom closeModal={closeModalForgot} isOpen={isOpenForgot}>
-          <ForgotPassword />
-        </ModalCustom>
-      )} */}
-      {/* {isOpenResetPass && (
-        <ModalCustom closeModal={closeModalResetPass} isOpen={isOpenResetPass}>
-          <ResetPassword closeModal={closeModalResetPass} />
-        </ModalCustom>
-      )} */}
     </Wrapper>
   );
 };

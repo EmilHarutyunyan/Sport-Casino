@@ -5,7 +5,7 @@ import useHideShow from '../../hooks/useHideShow';
 // Images
 
 import arrowImg from "../../assets/images/arrow.png"
-const SelectCustom = ({ onCustom,date,activeData,width,key='' }) => {
+const SelectCustom = ({ onCustom,date,activeData,width,key='',disabled=false }) => {
 console.log('date :', date);
 
   const {headerRef, childrenRef, otherRef, setShowLinks, showLinks} =
@@ -26,7 +26,7 @@ console.log('date :', date);
   );
 
   return (
-    <Wrapper width={width}>
+    <Wrapper width={width} disabled={disabled}>
       <NavHead onClick={() => setShowLinks((show) => !show)} ref={otherRef}>
         <p>{selectValue}</p>
         <img src={arrowImg} alt="arrow" />
@@ -34,7 +34,6 @@ console.log('date :', date);
       <NavWrap ref={headerRef} style={!showLinks ? { border: "none" } : null}>
         <ul ref={childrenRef}>
           {date.map((item) => {
-            
             return (
               <li
                 key={item.id}

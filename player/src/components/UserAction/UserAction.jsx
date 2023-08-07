@@ -6,14 +6,26 @@ import { Wrapper, NavWrap, UserHead } from "./UserAction.styles";
 import useHideShow from "../../hooks/useHideShow";
 import { playerLinks } from "./dataLinks";
 import { Link } from "react-router-dom";
+import { useCallback } from "react";
+import { useDispatch } from "react-redux";
+import { userLogout } from "../../app/features/user/userActions";
 
-const UserAction = () => {
+const UserAction = ({player={}}) => {
   const [headerRef, childrenRef, otherRef, setShowLinks] = useHideShow();
+  const dispatch = useDispatch()
+  const handleShow = useCallback((title)=> {
+  
+    if(title === 'Log out') {
+      dispatch(userLogout());
+    }
+    setShowLinks((show) => !show)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
   return (
     <Wrapper>
       <UserHead onClick={() => setShowLinks((show) => !show)} ref={otherRef}>
         <img src={userIcon} alt="" />
-        <span>Hey, John!</span>
+        <span>Hey, {player?.user_name || ""}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width={12}
@@ -31,7 +43,7 @@ const UserAction = () => {
         <ul ref={childrenRef}>
           {playerLinks.map((item) => {
             return (
-              <li key={item.id} onClick={() => setShowLinks((show) => !show)}>
+              <li key={item.id} onClick={() => handleShow(item.name)}>
                 <Link to={item.url}>
                   {item.icon}
                   {item.name}

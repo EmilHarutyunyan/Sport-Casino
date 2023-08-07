@@ -1,76 +1,118 @@
-import { createSlice } from '@reduxjs/toolkit'
-import { getUserDetails, registerUser, userLogin } from './userActions'
+import { createSlice } from "@reduxjs/toolkit";
+import {
+  changeMyProfile,
+  getUserDetails,
+  getUsersByRole,
+  userLogin,
+} from "./userActions";
 import TokenService from "../../../services/token.service";
 // initialize userToken from local storage
 
-const userToken = TokenService.getLocalAccessToken() || null
-const userInfo = TokenService.getUser() || null
+const userToken = TokenService.getLocalAccessToken() || null;
+const userInfo = TokenService.getUser() || null;
 
 const initialState = {
   loading: false,
   userInfo,
   userToken,
   error: null,
-  success: false,
-}
+  message: null,
+  agents:[],
+  userDetails: null,
+};
 
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {
     logout: (state) => {
       TokenService.removeUser(); // delete token from storage
-      state.loading = false
-      state.userInfo = null
-      state.userToken = null
-      state.error = null
+      state.loading = initialState.loading;
+      state.userInfo = null;
+      state.userToken = null;
+      state.error = initialState.error;
+      state.message = initialState.message;
+      state.superAgents = initialState.superAgents;
+      state.agents = initialState.agents;
+      state.players = initialState.players;
+    },
+    setMessage: (state, { payload }) => {
+      state.message = payload;
+    },
+    setError: (state, { payload }) => {
+      state.error = payload;
+    },
+    updateUserInfo: (state, { payload }) => {
+      state.userInfo = payload;
+    },
+    resetUserDetails: (state, { payload }) => {
+      state.userDetails = payload;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(userLogin.pending, (state) => {
-        state.loading = true
-        state.error = null
+        state.loading = true;
+        state.error = null;
       })
-      .addCase(userLogin.fulfilled, (state, {payload}) => {
-        state.loading = false
-        state.userInfo = payload
-        state.userToken = payload.userToken
+      .addCase(userLogin.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.userInfo = payload;
+        state.userToken = payload.userToken;
       })
-      .addCase(userLogin.rejected, (state, {payload}) => {
-        state.loading = false
-        state.error = payload
-      })
-      .addCase(registerUser.pending, (state) => {
-        state.loading = true
-        state.error = null
-      })
-      .addCase(registerUser.fulfilled, (state, {payload}) => {
-        state.loading = false
-        // registration successful
-        state.success = true 
-      })
-      .addCase(registerUser.rejected, (state, {payload}) => {
-        state.loading = false
-        state.error = payload
+      .addCase(userLogin.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
       })
       .addCase(getUserDetails.pending, (state) => {
-        state.loading = true
-        state.error = null
+        state.loading = true;
+        state.error = null;
       })
-      .addCase(getUserDetails.fulfilled, (state, {payload}) => {
-        state.loading = false
-        state.userInfo = payload
-      })
-      .addCase(getUserDetails.rejected, (state, {payload}) => {
-        state.loading = false
-        state.error = payload
-      })
-  },
-})
+      .addCase(getUserDetails.fulfilled, (state, { payload }) => {
+        state.loading = false;
 
-export const { logout } = userSlice.actions
+        state.userDetails = payload;
+      })
+      .addCase(getUserDetails.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
+      })
+
+      .addCase(changeMyProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changeMyProfile.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.message = payload.message;
+      })
+      .addCase(changeMyProfile.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
+      })
+      .addCase(getUsersByRole.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUsersByRole.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.agents = payload;
+      })
+      .addCase(getUsersByRole.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
+      });
+  },
+});
+
+export const {
+  logout,
+  setMessage,
+  setError,
+  updateUserInfo,
+  resetUserDetails,
+} = userSlice.actions;
 
 export const selectUser = (state) => state.user;
 
-export default userSlice.reducer
+export default userSlice.reducer;

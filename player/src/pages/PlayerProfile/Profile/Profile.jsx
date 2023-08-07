@@ -13,7 +13,7 @@ const Profile = () => {
       <AccountDetails />
       <PersonalDetails />
       {/* <WalletDetails /> */}
-      <PasswordDetails />
+      {/* <PasswordDetails /> */}
     </Wrapper>
   )
 }

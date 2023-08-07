@@ -53,6 +53,11 @@ const ActionsPerson = ({
       >
         <img src={editImg} alt={"edit"} />
       </div>
+      <div
+        onClick={() => handleNavigation(`${VIEW_PERSON}/${item.id}`, roleMemo)}
+      >
+        <img src={viewImg} alt={"view"} />
+      </div>
     </ActionWrap>
   );
 };
@@ -60,11 +65,12 @@ const ActionsPerson = ({
 const Players = () => {
   const navigation = useNavigate();
   const dispatch = useDispatch();
-  const { loading, players } = useSelector(selectUser);
+  const { loading, players, userInfo } = useSelector(selectUser);
   const [isPending, startTransition] = useTransition();
   const [searchTerm, setSearchTerm] = useState("");
   const [filtered, setFiltered] = useState(players);
-   const [filterUser, setFilterUser] = useState([]);
+  const [filterUser, setFilterUser] = useState([]);
+  const [myUsers, setMyUsers] = useState(false);
 
   const handleNavigation = useCallback(
     (path, state) => {
@@ -169,7 +175,7 @@ const Players = () => {
   } = useTable(
     {
       columns,
-      data: players,
+      data: filtered,
       initialState: { pageIndex: 0 },
     },
     usePagination
@@ -222,6 +228,22 @@ const Players = () => {
       });
     }
   };
+  useEffect(() => {
+    if (myUsers) {
+
+
+      startTransition(() => {
+        setFiltered(
+          players.filter((item) => item.parent.id === userInfo.user.id)
+        );
+      });
+    } else {
+      startTransition(() => {
+        setFiltered(players);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myUsers]);
   if (loading) {
     return <Spinner />;
   }
@@ -238,6 +260,28 @@ const Players = () => {
               type="text"
               placeholder="Full Name, Username"
             />
+          </div>
+          <div className="radio-wrap">
+            <div>
+              <input
+                type="radio"
+                id="all-agents"
+                name="All agents"
+                checked={!myUsers}
+                onChange={() => setMyUsers(false)}
+              />
+              <label for="all-agents">All players</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="my-agents"
+                name="My agents"
+                checked={myUsers}
+                onChange={() => setMyUsers(true)}
+              />
+              <label for="my-agents">My players</label>
+            </div>
           </div>
         </form>
         <BtnWrap>
@@ -257,6 +301,7 @@ const Players = () => {
             date={filterUser}
             onCustom={handleSelectFilter}
             activeData={"Filter by Agent"}
+            disabled={myUsers}
           />
         </BtnWrap>
       </FormWrap>

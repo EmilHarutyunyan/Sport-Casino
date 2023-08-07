@@ -3,15 +3,15 @@ import { v4 } from "uuid";
 export const dataLinks = [
   {
     id: v4(),
-    url: "/live-sportbook",
+    url: "/sport",
     icon: LiveSportbookIcon() ,
-    name: "Live Sportbook",
+    name: "Sport",
   },
   {
     id: v4(),
-    url: "/live-casino",
+    url: "/casino",
     icon: LiveCasinoIcon(),
-    name: "Live Casino",
+    name: "Casino",
   },
   {
     id: v4(),
