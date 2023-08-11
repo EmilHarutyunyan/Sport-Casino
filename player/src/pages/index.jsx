@@ -15,10 +15,10 @@ import { Profile, FundInOut, Outstanding, Transactions } from "./PlayerProfile";
 import Notifications from "./Notifications/";
 import AgentList from "../components/AgentList";
 import CallAgent from "./CallAgent";
-
 import NotFoundPage from "./NotFoundPage/NotFoundPage.lazy";
 import ErrorPage from "./ErrorPage";
 
+import SingleGame from "../pages/SingleGame/SingleGame";
 export {
   Home,
   About,
@@ -37,4 +37,5 @@ export {
   // Withdraw,
   // Deposit,
   CallAgent,
+  SingleGame,
 };

@@ -22,24 +22,31 @@ axiosInstance.interceptors.request.use(
     if (authTokens) {
       config.headers["token"] = `${authTokens.token}`;
     }
-    if (isExpired) {
-      let config = {
-        method: "post",
-        url: `${API_ENDPOINT}refresh-token`,
-        headers: {
-          Accept: "application/json",
-          token: `${authTokens.token}`,
-        },
-      };
+   if (isExpired) {
+     let config = {
+       method: "post",
+       url: `${API_ENDPOINT}refresh-token`,
+       headers: {
+         Accept: "application/json",
+         token: `${authTokens.token}`,
+       },
+     };
+     try {
+       const response = await axios.request(config);
 
-      const response = await axios.request(config);
-
-      const newToken = response.data.message;
-      TokenService.setUser({
-        ...authTokens,
-        token: newToken.token,
-      });
-    }
+       const newToken = response.data.message;
+       TokenService.setUser({
+         ...authTokens,
+         token: newToken.token,
+       });
+     } catch (error) {
+       if (error.response.status === 401) {
+         TokenService.removeUser();
+         window.location.reload(false);
+       }
+       console.log("error :", error);
+     }
+   }
 
     return config;
   },

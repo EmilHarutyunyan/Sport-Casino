@@ -16,5 +16,9 @@ export const TRANSACTIONS = "/player/transactions";
 export const CALL_AGENT = "/call-agent"
 export const AGENT_LIST = '/agent-list'
 export const NOTIFICATIONS = '/notifications'
+export const SINGLE_GAME_ID = "/game/:id";
+export const SINGLE_GAME = "/game/";
+
+
 export const NOT_FOUND_PAGE = "*";
 

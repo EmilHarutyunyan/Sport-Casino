@@ -17,7 +17,6 @@ axiosInstance.interceptors.request.use(
     const user = jwt_decode(authTokens.token);
     // 5 minute
     const isExpired = new Date(user.exp * 1000) - Date.now() < 3000000;
-    debugger
     if (authTokens) {
       config.headers["token"] = `${authTokens.token}`;
     }
@@ -45,7 +44,7 @@ axiosInstance.interceptors.request.use(
           window.location.reload(false)
         
         }
-      console.log('error :', error);
+      
          
       }
 

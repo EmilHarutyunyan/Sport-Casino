@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link,useLocation } from "react-router-dom";
 // Styles
 import { Wrapper } from "./AgentList.styles";
 
@@ -12,11 +12,96 @@ import { MobileIcon } from "../Icons/Icons";
 import { useDispatch, useSelector } from "react-redux";
 import { getUsersByRole } from "../../app/features/user/userActions";
 import { roles } from "../../utils/utils";
-import { selectUser } from "../../app/features/user/userSlice";
+import { resetAgent, selectUser } from "../../app/features/user/userSlice";
 import Spinner from "../Spinner/Spinner";
+import { CALL_AGENT } from "../../router/route-path";
+
+const AdminInfo = () => {
+  return (
+    <div>
+      <Title title={"Admin"} textAlign={"center"} />
+      <div>
+        <table role="table">
+          <thead>
+            <tr role="row">
+              <th colSpan={1} role="columnheader">
+                Admin Name
+              </th>
+              <th colSpan={1} role="columnheader">
+                Mobile Number
+              </th>
+              <th colSpan={1} role="columnheader">
+                Complain
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr role="row">
+              <td role="cell">Admin</td>
+              <td role="cell">8801752720544</td>
+              <td role="cell">
+                <link
+                  rel="noopener noreferrer"
+                  href="https://api.whatsapp.com/send?phone=13213215646"
+                  target="_blank"
+                />
+                <MobileIcon />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+const YourManager = ({user}) => {
+  return (
+  <div>
+    <Title title={"Your Manager"} textAlign={"center"} />
+          <div>
+            <table role="table">
+              <thead>
+                <tr role="row">
+                  <th colSpan={1} role="columnheader">
+                    Agent Name
+                  </th>
+                  <th colSpan={1} role="columnheader">
+                    Mobile Number
+                  </th>
+                  <th colSpan={1} role="columnheader">
+                    Complain
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr role="row">
+                  <td role="cell">{user?.parent?.user_name}</td>
+                  <td role="cell">{user?.parent?.phone_number}</td>
+                  <td role="cell">
+                    <link
+                      rel="noopener noreferrer"
+                      href="https://api.whatsapp.com/send?phone=13213215646"
+                      target="_blank"
+                    />
+                    <MobileIcon />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+  
+
+      )
+}
+
 const AgentList = () => {
   const dispatch = useDispatch();
   const { userInfo, agents,loading } = useSelector(selectUser);
+  const location = useLocation()
+  
+
   const [data, setData] = useState([
     {
       user_name: "Admin",
@@ -75,55 +160,28 @@ const AgentList = () => {
     usePagination
   );
   useEffect(() => {
+    
     dispatch(getUsersByRole(roles.agent));
-
+    return () => dispatch(resetAgent())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
+    
     if (agents.length) {
+      
       setData(agents);
     }
   }, [agents]);
   if(loading) {
     return <Spinner />
   }
+
   return (
     <>
       <Wrapper>
         <div>
-          <Title title={"Your Manager"} textAlign={"center"} />
-          <div>
-            <table role="table">
-              <thead>
-                <tr role="row">
-                  <th colSpan={1} role="columnheader">
-                    Agent Name
-                  </th>
-                  <th colSpan={1} role="columnheader">
-                    Mobile Number
-                  </th>
-                  <th colSpan={1} role="columnheader">
-                    Complain
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr role="row">
-                  <td role="cell">{userInfo?.user?.parent?.user_name}</td>
-                  <td role="cell">{userInfo?.user?.parent?.phone_number}</td>
-                  <td role="cell">
-                    <link
-                      rel="noopener noreferrer"
-                      href="https://api.whatsapp.com/send?phone=13213215646"
-                      target="_blank"
-                    />
-                    <MobileIcon />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+          {location.pathname === CALL_AGENT ? <AdminInfo />: <YourManager user={userInfo?.user}/>}
+        </div> 
         <Title title={"Agents List"} textAlign={"center"} />
 
         <table {...getTableProps()}>

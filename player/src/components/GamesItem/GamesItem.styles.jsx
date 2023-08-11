@@ -15,10 +15,40 @@ export const Wrapper = styled.div`
 export const Items = styled.div`
   display: flex;
   align-items: center;
-  gap:32px;
+  gap: 32px;
   flex-wrap: wrap;
   margin-top: 24px;
-`
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  div {
+    border-radius: 8px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  &.square {
+    img {
+      display: block;
+      object-fit: contain;
+      width: 240px;
+      height: 240px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  }
+  &.portrait {
+    img {
+      display: block;
+      object-fit: contain;
+      width: 100%;
+      max-width: 240px;
+      height: auto;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  }
+`;
 
 export const Item = styled.div`
   

@@ -71,6 +71,64 @@ export const Lists = styled.ul`
 `;
 export const List = styled.li`
   color: var(--color-white);
+  &:has(.notification) {
+    a {
+      display: flex;
+      align-items: center;
+    }
+    &:hover {
+      svg path {
+        stroke: var(--color-blue);
+        transition: var(--transition);
+      }
+    }
+    svg {
+      width: 35px;
+    }
+  }
+  &.contact {
+    display: flex;
+    align-items: center;
+    padding: 29px 32px;
+    svg {
+      width: 30px;
+    }
+    &:hover {
+      .cls-1 {
+        stroke: var(--color-blue);
+      }
+
+      .cls-2 {
+        stroke: var(--color-blue);
+      }
+    }
+    p {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+    .cls-1,
+    .cls-2 {
+      fill: none;
+      stroke: #fff;
+      stroke-linecap: round;
+      stroke-width: 1.5px;
+      transition: var(--transition);
+    }
+    .cls-1:hover {
+      stroke: var(--color-blue);
+    }
+
+    .cls-2:hover {
+      stroke: var(--color-blue);
+    }
+    .cls-1 {
+      stroke-linejoin: bevel;
+    }
+    .cls-2 {
+      stroke-linejoin: round;
+      fill-rule: evenodd;
+    }
+  }
   &.dFlex {
     display: flex;
     align-items: center;
@@ -121,6 +179,6 @@ export const List = styled.li`
   }
   a:hover {
     transition: var(--transition);
-    color: var(--color-blue);
+    /* color: var(--color-blue); */
   }
 `;

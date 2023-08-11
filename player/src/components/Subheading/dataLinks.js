@@ -3,9 +3,9 @@ import { v4 } from "uuid";
 export const dataLinks = [
   {
     id: v4(),
-    url: "/sport",
+    url: "/sports",
     icon: LiveSportbookIcon() ,
-    name: "Sport",
+    name: "Sports",
   },
   {
     id: v4(),

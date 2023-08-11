@@ -202,7 +202,7 @@ export const changeUserDetails = createAsyncThunk(
         },
       };
 
-      const { data } = await axiosInstance.post(
+      await axiosInstance.post(
         `${API_ENDPOINT}user-profile-information-change`,
         person,
         config

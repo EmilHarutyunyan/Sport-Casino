@@ -76,7 +76,7 @@ export const changeMyProfile = createAsyncThunk(
   "user/changeMyProfile",
   async (person, { rejectWithValue, dispatch }) => {
     try {
-      debugger;
+ 
       // configure header's Content-Type as JSON
       const config = {
         headers: {
@@ -142,6 +142,7 @@ export const getUsersByRole = createAsyncThunk(
   "user/getUsersByRole",
   async (role = "", { rejectWithValue, dispatch }) => {
     try {
+
       // configure header's Content-Type as JSON
       const config = {
         headers: {
@@ -149,7 +150,7 @@ export const getUsersByRole = createAsyncThunk(
         },
       };
 
-      const { data } = await axiosInstance.post(
+      const { data } = await axios.post(
         `${API_ENDPOINT}get-users-by-role`,
         { role },
         config

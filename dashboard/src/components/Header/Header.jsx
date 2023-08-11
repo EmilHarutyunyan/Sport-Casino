@@ -27,8 +27,8 @@ const Header = () => {
             <ImgWrapper
               src={logo}
               alt="logo"
-              width={"62px"}
-              height={"28px"}
+              width={"100px"}
+              height={"auto"}
               objectFit={"contain"}
               loading={"lazy"}
             />

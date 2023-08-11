@@ -19,6 +19,7 @@ const initialState = {
   message: null,
   agents:[],
   userDetails: null,
+  loginModal:false,
 };
 
 const userSlice = createSlice({
@@ -32,12 +33,13 @@ const userSlice = createSlice({
       state.userToken = null;
       state.error = initialState.error;
       state.message = initialState.message;
-      state.superAgents = initialState.superAgents;
       state.agents = initialState.agents;
-      state.players = initialState.players;
     },
     setMessage: (state, { payload }) => {
       state.message = payload;
+    },
+    setLoginModal:(state,{payload}) => {
+      state.loginModal = payload
     },
     setError: (state, { payload }) => {
       state.error = payload;
@@ -47,6 +49,9 @@ const userSlice = createSlice({
     },
     resetUserDetails: (state, { payload }) => {
       state.userDetails = payload;
+    },
+    resetAgent: (state, { payload }) => {
+       state.agents = initialState.agents;
     },
   },
   extraReducers: (builder) => {
@@ -111,6 +116,8 @@ export const {
   setError,
   updateUserInfo,
   resetUserDetails,
+  resetAgent,
+  setLoginModal,
 } = userSlice.actions;
 
 export const selectUser = (state) => state.user;
